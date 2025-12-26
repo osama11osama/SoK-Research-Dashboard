@@ -15,7 +15,7 @@
         <div *ngFor="let user of pendingUsers" class="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
           <div>
             <p class="font-semibold text-slate-800">{{ user.displayName }}</p>
-            <p class="text-sm text-slate-500">@{{ user.username }}</p>
+            <p class="text-sm text-slate-500">{{ user.username }}</p>
             <p class="text-xs text-slate-400 mt-1">Registered: {{ user.createdAt | date:'short' }}</p>
           </div>
           <div class="flex gap-2">
@@ -54,7 +54,7 @@
             <tr *ngFor="let user of allUsers" class="border-b border-slate-100">
               <td class="py-4 px-4">
                 <p class="font-medium text-slate-800">{{ user.displayName }}</p>
-                <p class="text-sm text-slate-500">@{{ user.username }}</p>
+                <p class="text-sm text-slate-500">{{ user.username }}</p>
               </td>
               <td class="py-4 px-4">
                 <span [class]="'px-2 py-1 rounded text-xs font-medium ' + getRoleBadge(user.role)">
@@ -92,7 +92,7 @@
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
       <div class="p-6 border-b border-slate-100">
         <h3 class="text-xl font-bold">Approve User</h3>
-        <p class="text-sm text-slate-600 mt-2">{{ selectedUser.displayName }} (@{{ selectedUser.username }})</p>
+        <p class="text-sm text-slate-600 mt-2">{{ selectedUser.displayName }} ({{ selectedUser.username }})</p>
       </div>
       <div class="p-6 space-y-4">
         <div>

@@ -20,6 +20,51 @@ A web-based research dashboard designed to support a Systematization of Knowledg
 - **Reverse Proxy**: Nginx
 - **Containerization**: Docker & Docker Compose
 
+## Quick Start (Local Development)
+
+### Prerequisites
+
+- Docker Desktop installed
+- Node.js 20+ installed
+- npm installed
+
+### One-Command Setup
+
+Simply run:
+
+```powershell
+.\setup-local.ps1
+```
+
+This script will:
+1. ✅ Check prerequisites (Docker, Node.js, npm)
+2. ✅ Create/start MongoDB container with name `sok-research-mongodb-local`
+3. ✅ Install backend and frontend dependencies
+4. ✅ Start backend server (port 3000)
+5. ✅ Start frontend server (port 4200)
+6. ✅ Open browser automatically
+
+The MongoDB container uses a recognizable name: **`sok-research-mongodb-local`** (different from docker-compose containers).
+
+### Stop Services
+
+```powershell
+.\stop-local.ps1
+```
+
+Or manually:
+- Close the PowerShell windows for Backend and Frontend
+- Stop MongoDB: `docker stop sok-research-mongodb-local`
+
+### Create Super Admin
+
+The first user to register automatically becomes SUPER_ADMIN, or use:
+
+```powershell
+cd backend
+node src/scripts/bootstrap-admin.js
+```
+
 ## User Roles
 
 ### SUPER_ADMIN
@@ -50,117 +95,14 @@ A web-based research dashboard designed to support a Systematization of Knowledg
 
 Account states: PENDING, APPROVED, REJECTED, DISABLED
 
-## Quick Start
+## Production Deployment
 
-### Prerequisites
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed production deployment instructions.
 
-- Docker and Docker Compose installed
-- Node.js 20+ (for local development)
+For quick Docker deployment:
 
-### Production Deployment
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd SoK-Research-Dashboard
-```
-
-2. Copy and configure environment variables:
-```bash
-cp .env.example .env
-# Edit .env with your production values
-```
-
-3. Build and start all services:
 ```bash
 docker-compose up -d --build
-```
-
-4. Create the first Super Admin user:
-```bash
-docker-compose exec api node src/scripts/bootstrap-admin.js
-```
-
-5. Access the application:
-- Frontend: http://your-domain.com
-- API: http://your-domain.com/api
-
-### Local Development
-
-#### Backend
-
-1. Navigate to backend directory:
-```bash
-cd backend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Copy environment file:
-```bash
-cp .env.example .env
-```
-
-4. Update `.env` with local MongoDB URI:
-```
-MONGODB_URI=mongodb://localhost:27017/sok_research
-```
-
-5. Start MongoDB (if not running):
-```bash
-# Using Docker
-docker run -d -p 27017:27017 --name mongodb mongo:7.0
-
-# Or use your local MongoDB installation
-```
-
-6. Start the development server:
-```bash
-npm run dev
-```
-
-The API will be available at http://localhost:3000
-
-#### Frontend
-
-1. Navigate to frontend directory:
-```bash
-cd frontend/sok-frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Install Tailwind CSS dependencies:
-```bash
-npm install -D tailwindcss postcss autoprefixer
-```
-
-4. Start the development server:
-```bash
-npm start
-```
-
-The frontend will be available at http://localhost:4200
-
-### Bootstrap Super Admin
-
-If no users exist in the database, the first user to register will automatically become a SUPER_ADMIN with APPROVED status.
-
-Alternatively, you can use the bootstrap script:
-
-```bash
-# In production (Docker)
-docker-compose exec api node src/scripts/bootstrap-admin.js
-
-# In development
-cd backend
-node src/scripts/bootstrap-admin.js
 ```
 
 ## API Endpoints
@@ -240,6 +182,11 @@ node src/scripts/bootstrap-admin.js
 
 ## Docker Configuration
 
+### Local Development
+- MongoDB container: `sok-research-mongodb-local` (easily recognizable)
+- Runs on localhost ports
+
+### Production Deployment
 The application consists of four containers:
 
 1. **mongo**: MongoDB database with persistent volume
@@ -256,17 +203,6 @@ See `.env.example` for required environment variables. Key variables:
 - `JWT_REFRESH_SECRET`: Secret for refresh token signing
 - `CORS_ORIGIN`: Allowed CORS origin
 - `FRONTEND_URL`: Frontend URL for redirects
-
-## Deployment on Hetzner VPS
-
-1. Set up your Hetzner VPS with Docker and Docker Compose
-2. Clone the repository to your server
-3. Configure environment variables in `.env`
-4. Set up SSL certificates (Let's Encrypt recommended)
-5. Update nginx configuration for HTTPS
-6. Build and start containers: `docker-compose up -d --build`
-7. Bootstrap the first admin user
-8. Configure firewall to allow ports 80 and 443
 
 ## Contributing
 

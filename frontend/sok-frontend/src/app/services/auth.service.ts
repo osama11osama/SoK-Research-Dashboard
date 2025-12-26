@@ -69,9 +69,21 @@ export class AuthService {
     const token = localStorage.getItem('accessToken');
     if (token) {
       this.getCurrentUser().subscribe({
+        next: (response) => {
+          this.currentUserSubject.next(response.user);
+        },
         error: () => {
-          localStorage.removeItem('accessToken');
-          this.currentUserSubject.next(null);
+          // Try to refresh token if access token expired
+          this.http.post<any>(`${this.apiUrl}/auth/refresh`, {}).subscribe({
+            next: (refreshResponse) => {
+              localStorage.setItem('accessToken', refreshResponse.accessToken);
+              this.currentUserSubject.next(refreshResponse.user);
+            },
+            error: () => {
+              localStorage.removeItem('accessToken');
+              this.currentUserSubject.next(null);
+            }
+          });
         }
       });
     }

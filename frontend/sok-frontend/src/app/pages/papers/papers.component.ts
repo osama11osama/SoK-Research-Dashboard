@@ -24,6 +24,7 @@ export class PapersComponent implements OnInit {
   stats: any = null;
   currentUser$ = this.authService.currentUser$;
   filter: 'All' | 'TO_READ' | 'IN_PROGRESS' | 'READ' = 'All';
+  filterOptions: ('All' | 'TO_READ' | 'IN_PROGRESS' | 'READ')[] = ['All', 'TO_READ', 'IN_PROGRESS', 'READ'];
   showAddModal = false;
   newPaper: Partial<Paper> = {
     title: '',
@@ -72,8 +73,8 @@ export class PapersComponent implements OnInit {
     }
   }
 
-  setFilter(filter: 'All' | 'TO_READ' | 'IN_PROGRESS' | 'READ') {
-    this.filter = filter;
+  setFilter(filter: string) {
+    this.filter = filter as 'All' | 'TO_READ' | 'IN_PROGRESS' | 'READ';
     this.applyFilter();
   }
 

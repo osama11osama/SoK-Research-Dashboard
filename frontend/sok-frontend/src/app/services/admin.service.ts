@@ -25,8 +25,11 @@ export class AdminService {
   private apiUrl = '/api';
 
   getUsers(status?: string): Observable<UsersResponse> {
-    const params = status ? { status } : {};
-    return this.http.get<UsersResponse>(`${this.apiUrl}/admin/users`, { params });
+    if (status) {
+      return this.http.get<UsersResponse>(`${this.apiUrl}/admin/users`, { params: { status } });
+    } else {
+      return this.http.get<UsersResponse>(`${this.apiUrl}/admin/users`);
+    }
   }
 
   getUser(id: string): Observable<{ user: AdminUser }> {
