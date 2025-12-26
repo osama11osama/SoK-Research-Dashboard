@@ -5,6 +5,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
+import { SettingsService } from '../../services/settings.service';
 
 @Component({
   selector: 'app-user-settings',
@@ -16,6 +17,7 @@ import { AdminService } from '../../services/admin.service';
 export class UserSettingsComponent implements OnInit {
   private authService = inject(AuthService);
   private adminService = inject(AdminService);
+  private settingsService = inject(SettingsService);
   private toastr = inject(ToastrService);
   private router = inject(Router);
 
@@ -32,10 +34,16 @@ export class UserSettingsComponent implements OnInit {
   selectedUserPassword = '';
   showUserPasswordModal = false;
 
+  // Application settings (SUPER_ADMIN only)
+  showPaperTimestamps = false;
+  showPaperCreator = false;
+  settingsLoading = false;
+
   ngOnInit() {
     this.loadCurrentUser();
     if (this.isSuperAdmin()) {
       this.loadAllUsers();
+      this.loadSettings();
     }
   }
 
@@ -176,6 +184,53 @@ export class UserSettingsComponent implements OnInit {
     if (!this.selectedUserId) return '';
     const user = this.allUsers.find(u => u._id === this.selectedUserId);
     return user ? `${user.displayName} (${user.username})` : '';
+  }
+
+  // Application settings methods (SUPER_ADMIN only)
+  loadSettings() {
+    this.settingsLoading = true;
+    this.settingsService.getSettings().subscribe({
+      next: (response) => {
+        this.showPaperTimestamps = response.settings['showPaperTimestamps'] === true;
+        this.showPaperCreator = response.settings['showPaperCreator'] === true;
+        this.settingsLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load settings:', err);
+        this.toastr.error('Failed to load settings');
+        this.settingsLoading = false;
+      }
+    });
+  }
+
+  updateTimestampVisibility() {
+    this.loading = true;
+    this.settingsService.updateSetting('showPaperTimestamps', this.showPaperTimestamps, 'Show paper creation timestamps on papers list').subscribe({
+      next: () => {
+        this.toastr.success('Settings updated successfully');
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Failed to update settings:', err);
+        this.toastr.error('Failed to update settings');
+        this.loading = false;
+      }
+    });
+  }
+
+  updateCreatorVisibility() {
+    this.loading = true;
+    this.settingsService.updateSetting('showPaperCreator', this.showPaperCreator, 'Show who added each paper').subscribe({
+      next: () => {
+        this.toastr.success('Settings updated successfully');
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Failed to update settings:', err);
+        this.toastr.error('Failed to update settings');
+        this.loading = false;
+      }
+    });
   }
 }
 

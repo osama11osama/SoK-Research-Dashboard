@@ -73,6 +73,8 @@ export class AdminPaperFinderComponent implements OnInit {
   ];
 
   ngOnInit() {
+    // Scroll to top when component loads
+    window.scrollTo(0, 0);
     // Auto-search with a default query on load
     this.searchQuery = 'browser extension security';
     this.search();
