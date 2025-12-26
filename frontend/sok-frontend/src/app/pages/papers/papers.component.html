@@ -1,0 +1,206 @@
+<div class="min-h-screen bg-slate-50">
+  <!-- Sidebar Navigation -->
+  <nav class="fixed left-0 top-0 h-full w-64 bg-slate-900 text-white p-6 hidden md:block">
+    <div class="flex items-center gap-3 mb-10">
+      <div class="p-2 bg-blue-500 rounded-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+        </svg>
+      </div>
+      <h1 class="text-xl font-bold tracking-tight">SoK Explorer</h1>
+    </div>
+    
+    <div class="space-y-1">
+      <p class="text-xs font-semibold text-slate-500 uppercase mb-4 px-2">Research Dashboard</p>
+      <a routerLink="/app/papers" class="w-full flex items-center gap-3 px-3 py-2 bg-slate-800 rounded-md text-blue-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+        </svg>
+        <span>Literature Review</span>
+      </a>
+      <a *ngIf="isSuperAdmin()" routerLink="/app/admin/users" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-400 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <span>User Management</span>
+      </a>
+    </div>
+
+    <div class="absolute bottom-10 left-6 right-6">
+      <div *ngIf="currentUser$ | async as user" class="p-4 bg-slate-800/50 rounded-xl border border-slate-700">
+        <p class="text-sm font-medium">{{ user.displayName }}</p>
+        <p class="text-xs text-slate-400">{{ user.role }}</p>
+      </div>
+      <button (click)="logout()" class="w-full mt-2 px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-md transition-colors text-sm">
+        Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="md:ml-64 p-8">
+    <header class="flex justify-between items-end mb-8">
+      <div>
+        <h2 class="text-3xl font-bold text-slate-800 mb-2">Browser Extension SoK</h2>
+        <p class="text-slate-500">Systematization of Knowledge on Browser Security & Privacy</p>
+      </div>
+      <button 
+        (click)="openAddModal()"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-blue-200"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Add New Paper
+      </button>
+    </header>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" *ngIf="stats">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <p class="text-slate-500 text-sm mb-1">Total Papers Collected</p>
+        <h3 class="text-2xl font-bold">{{ stats.papers.total }}</h3>
+      </div>
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-green-500">
+        <p class="text-slate-500 text-sm mb-1">Completed Reading</p>
+        <h3 class="text-2xl font-bold">{{ stats.papers.read }}</h3>
+      </div>
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-l-4 border-l-amber-500">
+        <p class="text-slate-500 text-sm mb-1">Currently Analyzing</p>
+        <h3 class="text-2xl font-bold">{{ stats.papers.inProgress }}</h3>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="flex items-center gap-4 mb-6">
+      <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+      </svg>
+      <div class="flex bg-slate-200/50 p-1 rounded-lg">
+        <button
+          *ngFor="let status of ['All', 'TO_READ', 'IN_PROGRESS', 'READ']"
+          (click)="setFilter(status as any)"
+          [class]="'px-4 py-1.5 rounded-md text-sm font-medium transition-all ' + (filter === status ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700')"
+        >
+          {{ status === 'TO_READ' ? 'To Read' : status === 'IN_PROGRESS' ? 'In Progress' : status }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Papers List -->
+    <div class="space-y-4">
+      <div *ngFor="let paper of filteredPapers" class="group bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <span [class]="'px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ' + getStatusColor(paper.readingStatus)">
+                {{ paper.readingStatus === 'TO_READ' ? 'To Read' : paper.readingStatus === 'IN_PROGRESS' ? 'In Progress' : 'Read' }}
+              </span>
+              <span class="text-slate-400 text-sm font-medium">{{ paper.venue }}</span>
+            </div>
+            <h4 class="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition-colors flex items-center gap-2">
+              <a [routerLink]="['/app/papers', paper._id]" class="hover:underline">{{ paper.title }}</a>
+              <a *ngIf="paper.link" [href]="paper.link" target="_blank" rel="noopener noreferrer">
+                <svg class="w-4 h-4 text-slate-300 hover:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+              </a>
+            </h4>
+            <p class="text-slate-600 text-sm mb-3">by {{ paper.authors }}</p>
+            
+            <div class="flex flex-wrap gap-2 mb-4" *ngIf="paper.tags && paper.tags.length > 0">
+              <span *ngFor="let tag of paper.tags" class="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full border border-blue-100">
+                {{ tag }}
+              </span>
+            </div>
+          </div>
+          
+          <button 
+            *ngIf="isSuperAdmin()"
+            (click)="deletePaper(paper._id!)"
+            class="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div *ngIf="filteredPapers.length === 0" class="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+        <svg class="mx-auto text-slate-300 mb-4 w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <p class="text-slate-500 font-medium">No papers found for this criteria.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add Paper Modal -->
+  <div *ngIf="showAddModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+      <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+        <h3 class="text-xl font-bold">Add Research Paper</h3>
+        <button (click)="closeAddModal()" class="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <input 
+          placeholder="Paper Title *" 
+          class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+          [(ngModel)]="newPaper.title"
+        />
+        <div class="grid grid-cols-2 gap-4">
+          <input 
+            placeholder="Authors *" 
+            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            [(ngModel)]="newPaper.authors"
+          />
+          <input 
+            placeholder="Venue (e.g. USENIX '24)" 
+            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            [(ngModel)]="newPaper.venue"
+          />
+        </div>
+        <input 
+          type="number"
+          placeholder="Year" 
+          class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+          [(ngModel)]="newPaper.year"
+        />
+        <input 
+          placeholder="Link to PDF" 
+          class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+          [(ngModel)]="newPaper.link"
+        />
+        <input 
+          placeholder="Tags (comma separated)" 
+          class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+          [(ngModel)]="tagsInput"
+        />
+        <select 
+          class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+          [(ngModel)]="newPaper.readingStatus"
+        >
+          <option value="TO_READ">To Read</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="READ">Read</option>
+        </select>
+      </div>
+      <div class="p-6 bg-slate-50 flex gap-3">
+        <button 
+          (click)="closeAddModal()"
+          class="flex-1 px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
+        >
+          Cancel
+        </button>
+        <button 
+          (click)="addPaper()"
+          class="flex-1 px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg shadow-md shadow-blue-200 transition-colors"
+        >
+          Save Paper
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

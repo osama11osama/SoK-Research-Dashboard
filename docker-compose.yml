@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: sok-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: sok_research
+    networks:
+      - sok-network
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sok-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://mongo:27017/sok_research
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-in-production}
+      CORS_ORIGIN: ${CORS_ORIGIN:-https://yourdomain.com}
+      FRONTEND_URL: ${FRONTEND_URL:-https://yourdomain.com}
+    depends_on:
+      - mongo
+    networks:
+      - sok-network
+
+  frontend:
+    build:
+      context: ./frontend/sok-frontend
+      dockerfile: Dockerfile
+    container_name: sok-frontend
+    restart: unless-stopped
+    depends_on:
+      - api
+    networks:
+      - sok-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: sok-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - api
+    networks:
+      - sok-network
+
+networks:
+  sok-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+

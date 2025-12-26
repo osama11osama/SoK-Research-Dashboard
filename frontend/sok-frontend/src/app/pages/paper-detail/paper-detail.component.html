@@ -1,0 +1,149 @@
+<div class="min-h-screen bg-slate-50">
+  <!-- Header -->
+  <div class="bg-white border-b border-slate-200 p-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <button (click)="router.navigate(['/app/papers'])" class="text-blue-600 hover:text-blue-700 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Papers
+      </button>
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto p-8" *ngIf="paper">
+    <!-- Paper Details -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-8">
+      <div class="flex items-start justify-between mb-6">
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-700">
+              {{ paper.readingStatus === 'TO_READ' ? 'To Read' : paper.readingStatus === 'IN_PROGRESS' ? 'In Progress' : 'Read' }}
+            </span>
+            <span class="text-slate-500 text-sm">{{ paper.venue }}</span>
+            <span *ngIf="paper.year" class="text-slate-500 text-sm">{{ paper.year }}</span>
+          </div>
+          
+          <h1 class="text-3xl font-bold text-slate-800 mb-4">{{ paper.title }}</h1>
+          <p class="text-lg text-slate-600 mb-6">by {{ paper.authors }}</p>
+
+          <div class="flex flex-wrap gap-2 mb-6" *ngIf="paper.tags && paper.tags.length > 0">
+            <span *ngFor="let tag of paper.tags" class="px-3 py-1 bg-blue-50 text-blue-600 text-sm rounded-full border border-blue-100">
+              {{ tag }}
+            </span>
+          </div>
+
+          <a *ngIf="paper.link" [href]="paper.link" target="_blank" rel="noopener noreferrer" 
+             class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+            </svg>
+            View Paper
+          </a>
+        </div>
+      </div>
+
+      <!-- SoK Metadata -->
+      <div *ngIf="paper.sok" class="mt-8 pt-8 border-t border-slate-200">
+        <h2 class="text-xl font-bold text-slate-800 mb-4">SoK Metadata</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div *ngIf="paper.sok.category">
+            <p class="text-sm font-medium text-slate-600 mb-1">Category</p>
+            <p class="text-slate-800">{{ paper.sok.category }}</p>
+          </div>
+          <div *ngIf="paper.sok.method">
+            <p class="text-sm font-medium text-slate-600 mb-1">Method</p>
+            <p class="text-slate-800">{{ paper.sok.method }}</p>
+          </div>
+          <div *ngIf="paper.sok.dataset">
+            <p class="text-sm font-medium text-slate-600 mb-1">Dataset</p>
+            <p class="text-slate-800">{{ paper.sok.dataset }}</p>
+          </div>
+          <div *ngIf="paper.sok.threatModel && paper.sok.threatModel.length > 0">
+            <p class="text-sm font-medium text-slate-600 mb-1">Threat Model</p>
+            <div class="flex flex-wrap gap-2">
+              <span *ngFor="let threat of paper.sok.threatModel" class="px-2 py-1 bg-red-50 text-red-700 text-xs rounded">
+                {{ threat }}
+              </span>
+            </div>
+          </div>
+          <div *ngIf="paper.sok.keyFindings" class="md:col-span-2">
+            <p class="text-sm font-medium text-slate-600 mb-1">Key Findings</p>
+            <p class="text-slate-800">{{ paper.sok.keyFindings }}</p>
+          </div>
+          <div *ngIf="paper.sok.limitations" class="md:col-span-2">
+            <p class="text-sm font-medium text-slate-600 mb-1">Limitations</p>
+            <p class="text-slate-800">{{ paper.sok.limitations }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes Section -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+      <h2 class="text-2xl font-bold text-slate-800 mb-6">Notes</h2>
+
+      <!-- Add Note Form -->
+      <div *ngIf="canAddNotes()" class="mb-8 p-6 bg-slate-50 rounded-xl">
+        <h3 class="text-lg font-semibold text-slate-800 mb-4">Add Note</h3>
+        <textarea
+          [(ngModel)]="newNoteContent"
+          rows="4"
+          placeholder="Write your note here..."
+          class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none mb-4"
+        ></textarea>
+        
+        <div class="flex items-center gap-4 mb-4">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              [(ngModel)]="newNoteVisibility"
+              value="PUBLIC"
+              name="visibility"
+              class="text-blue-600"
+            />
+            <span class="text-sm">🌐 Public (visible to all)</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              [(ngModel)]="newNoteVisibility"
+              value="PRIVATE"
+              name="visibility"
+              class="text-blue-600"
+            />
+            <span class="text-sm">🔒 Private (only visible to you)</span>
+          </label>
+        </div>
+
+        <button
+          (click)="addNote()"
+          [disabled]="!newNoteContent.trim() || loading"
+          class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {{ loading ? 'Adding...' : 'Add Note' }}
+        </button>
+      </div>
+
+      <!-- Notes List -->
+      <div class="space-y-4">
+        <div *ngFor="let note of notes" class="p-4 border border-slate-200 rounded-lg">
+          <div class="flex items-start justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">{{ getVisibilityIcon(note.visibility) }}</span>
+              <span class="text-xs text-slate-500">
+                {{ note.visibility }} • {{ note.createdAt | date:'short' }}
+              </span>
+            </div>
+          </div>
+          <p class="text-slate-800 whitespace-pre-wrap">{{ note.content }}</p>
+        </div>
+
+        <div *ngIf="notes.length === 0" class="text-center py-12 text-slate-500">
+          No notes yet. Be the first to add one!
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
