@@ -36,13 +36,51 @@
             </button>
           </div>
           
-          <h1 class="text-3xl font-bold text-slate-800 mb-4">{{ paper.title }}</h1>
-          <p class="text-lg text-slate-600 mb-6">by {{ paper.authors }}</p>
+          <div class="flex items-start gap-3 mb-4">
+            <button
+              (click)="toggleFavorite()"
+              class="p-2 hover:bg-yellow-50 rounded-lg transition-colors flex-shrink-0 mt-1"
+              [title]="paper.isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+              type="button"
+            >
+              <svg 
+                class="w-6 h-6 transition-all" 
+                [class.text-yellow-500]="paper.isFavorite"
+                [class.text-slate-400]="!paper.isFavorite"
+                [class.fill-yellow-500]="paper.isFavorite"
+                [class.fill-none]="!paper.isFavorite"
+                fill="currentColor"
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+              </svg>
+            </button>
+            <div class="flex-1">
+              <h1 class="text-3xl font-bold text-slate-800 mb-2">{{ paper.title }}</h1>
+              <p class="text-lg text-slate-600">by {{ paper.authors }}</p>
+            </div>
+          </div>
+          <div class="text-sm text-slate-400 mb-6 space-y-1">
+            <p *ngIf="(settings$ | async)?.['showPaperTimestamps'] && paper.createdAt">
+              Added {{ paper.createdAt | date:'short' }}
+            </p>
+            <p *ngIf="(settings$ | async)?.['showPaperCreator'] && paper.createdBy">
+              Added by {{ paper.createdBy.displayName || paper.createdBy.username }}
+            </p>
+            <div *ngIf="!((settings$ | async)?.['showPaperTimestamps'] && paper.createdAt) && !((settings$ | async)?.['showPaperCreator'] && paper.createdBy)" class="mb-6"></div>
+          </div>
 
           <div class="flex flex-wrap gap-2 mb-6" *ngIf="paper.tags && paper.tags.length > 0">
-            <span *ngFor="let tag of paper.tags" class="px-3 py-1 bg-blue-50 text-blue-600 text-sm rounded-full border border-blue-100">
+            <button
+              *ngFor="let tag of paper.tags"
+              (click)="filterByTag(tag)"
+              class="px-3 py-1 bg-blue-50 text-blue-600 text-sm rounded-full border border-blue-100 hover:bg-blue-100 hover:border-blue-300 cursor-pointer transition-colors"
+              title="Filter by this tag"
+            >
               {{ tag }}
-            </span>
+            </button>
           </div>
 
           <a *ngIf="paper.link" (click)="openLink($event, paper.link)" 
@@ -74,9 +112,14 @@
           <div *ngIf="paper.sok.threatModel && paper.sok.threatModel.length > 0">
             <p class="text-sm font-medium text-slate-600 mb-1">Threat Model</p>
             <div class="flex flex-wrap gap-2">
-              <span *ngFor="let threat of paper.sok.threatModel" class="px-2 py-1 bg-red-50 text-red-700 text-xs rounded">
+              <button
+                *ngFor="let threat of paper.sok.threatModel"
+                (click)="filterByThreatModel(threat)"
+                class="px-2 py-1 bg-red-50 text-red-700 text-xs rounded hover:bg-red-100 hover:border-red-300 cursor-pointer transition-colors border border-red-100"
+                title="Filter by this threat model"
+              >
                 {{ threat }}
-              </span>
+              </button>
             </div>
           </div>
           <div *ngIf="paper.sok.keyFindings" class="md:col-span-2">
@@ -240,14 +283,38 @@
           </select>
         </div>
 
+        <!-- Tags Selection -->
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-2">Tags (comma separated)</label>
-          <input
-            type="text"
-            [(ngModel)]="tagsInputEdit"
-            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
-            placeholder="e.g. Security, Privacy, Browser"
-          />
+          <label class="block text-sm font-medium text-slate-700 mb-2">Tags</label>
+          <div class="space-y-2">
+            <div class="max-h-32 overflow-y-auto border border-slate-200 rounded-lg p-2 space-y-1">
+              <label *ngFor="let tag of tags" class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
+                <input
+                  type="checkbox"
+                  [checked]="isTagSelected(tag._id)"
+                  (change)="toggleTag(tag._id)"
+                  class="rounded text-blue-600"
+                />
+                <span class="text-sm">{{ tag.displayName }}</span>
+              </label>
+              <div *ngIf="tags.length === 0" class="text-sm text-slate-500 p-2">No tags available</div>
+            </div>
+            <div class="flex gap-2">
+              <input
+                type="text"
+                placeholder="Create new tag..."
+                [(ngModel)]="newTagName"
+                (keyup.enter)="addNewTag()"
+                class="flex-1 px-3 py-1.5 text-sm rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+              <button
+                (click)="addNewTag()"
+                class="px-3 py-1.5 text-sm bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+              >
+                Add
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- SoK Metadata Section -->
@@ -282,14 +349,38 @@
             />
           </div>
 
+          <!-- Threat Models Selection -->
           <div class="mb-4">
-            <label class="block text-sm font-medium text-slate-700 mb-2">Threat Model (comma separated)</label>
-            <input
-              type="text"
-              [(ngModel)]="threatModelInput"
-              (input)="updateThreatModel($any($event.target).value)"
-              class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
-            />
+            <label class="block text-sm font-medium text-slate-700 mb-2">Threat Models</label>
+            <div class="space-y-2">
+              <div class="max-h-32 overflow-y-auto border border-slate-200 rounded-lg p-2 space-y-1">
+                <label *ngFor="let threatModel of threatModels" class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
+                  <input
+                    type="checkbox"
+                    [checked]="isThreatModelSelected(threatModel._id)"
+                    (change)="toggleThreatModel(threatModel._id)"
+                    class="rounded text-blue-600"
+                  />
+                  <span class="text-sm">{{ threatModel.displayName }}</span>
+                </label>
+                <div *ngIf="threatModels.length === 0" class="text-sm text-slate-500 p-2">No threat models available</div>
+              </div>
+              <div class="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Create new threat model..."
+                  [(ngModel)]="newThreatModelName"
+                  (keyup.enter)="addNewThreatModel()"
+                  class="flex-1 px-3 py-1.5 text-sm rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+                <button
+                  (click)="addNewThreatModel()"
+                  class="px-3 py-1.5 text-sm bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="mb-4">

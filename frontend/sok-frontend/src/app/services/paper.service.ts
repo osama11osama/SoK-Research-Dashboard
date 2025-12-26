@@ -24,8 +24,13 @@ export interface Paper {
     };
   };
   createdByUserId?: string | null;
+  createdBy?: {
+    username: string;
+    displayName: string;
+  } | null;
   createdAt?: string;
   updatedAt?: string;
+  isFavorite?: boolean;
 }
 
 export interface PapersResponse {
@@ -39,8 +44,13 @@ export class PaperService {
   private http = inject(HttpClient);
   private apiUrl = '/api';
 
-  getPapers(): Observable<PapersResponse> {
-    return this.http.get<PapersResponse>(`${this.apiUrl}/papers`);
+  getPapers(tag?: string, threatModel?: string, venue?: string, year?: number): Observable<PapersResponse> {
+    const params: any = {};
+    if (tag) params.tag = tag;
+    if (threatModel) params.threatModel = threatModel;
+    if (venue) params.venue = venue;
+    if (year) params.year = year.toString();
+    return this.http.get<PapersResponse>(`${this.apiUrl}/papers`, { params });
   }
 
   getPaper(id: string): Observable<{ paper: Paper }> {

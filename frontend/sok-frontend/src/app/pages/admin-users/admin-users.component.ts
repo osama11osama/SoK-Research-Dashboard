@@ -1,22 +1,25 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AdminService, AdminUser } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
+import { SettingsService } from '../../services/settings.service';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
   templateUrl: './admin-users.component.html',
   styleUrl: './admin-users.component.css'
 })
 export class AdminUsersComponent implements OnInit {
   private adminService = inject(AdminService);
   private authService = inject(AuthService);
+  private settingsService = inject(SettingsService);
   private toastr = inject(ToastrService);
+  private router = inject(Router);
 
   pendingUsers: AdminUser[] = [];
   allUsers: AdminUser[] = [];
@@ -24,10 +27,39 @@ export class AdminUsersComponent implements OnInit {
   selectedRole: string = 'REVIEWER_VIEW';
   showApprovalModal = false;
   loading = false;
+  showPaperTimestamps = false;
+  settingsLoading = false;
 
   ngOnInit() {
     this.loadPendingUsers();
     this.loadAllUsers();
+    this.loadSettings();
+  }
+
+  loadSettings() {
+    this.settingsService.getSettings().subscribe({
+      next: (response) => {
+        this.showPaperTimestamps = response.settings['showPaperTimestamps'] === true;
+      },
+      error: (err) => {
+        console.error('Failed to load settings:', err);
+      }
+    });
+  }
+
+  updateTimestampVisibility() {
+    this.settingsLoading = true;
+    this.settingsService.updateSetting('showPaperTimestamps', this.showPaperTimestamps, 'Show paper creation timestamps on papers list').subscribe({
+      next: () => {
+        this.toastr.success('Settings updated successfully');
+        this.settingsLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to update settings:', err);
+        this.toastr.error('Failed to update settings');
+        this.settingsLoading = false;
+      }
+    });
   }
 
   loadPendingUsers() {
@@ -131,6 +163,24 @@ export class AdminUsersComponent implements OnInit {
       default:
         return 'bg-slate-100 text-slate-700';
     }
+  }
+
+  currentUser$ = this.authService.currentUser$;
+
+  isSuperAdmin(): boolean {
+    return this.authService.isSuperAdmin();
+  }
+
+  logout() {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        // Even if logout fails, clear local state and redirect
+        this.router.navigate(['/login']);
+      }
+    });
   }
 
   getRoleBadge(role: string) {

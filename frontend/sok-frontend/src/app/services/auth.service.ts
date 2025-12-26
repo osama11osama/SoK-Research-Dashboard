@@ -106,5 +106,18 @@ export class AuthService {
     const user = this.currentUserSubject.value;
     return user?.role === 'SUPER_ADMIN' || user?.role === 'REVIEWER_NOTE';
   }
+
+  updateProfile(username?: string, password?: string): Observable<{ message: string; user: User }> {
+    const body: any = {};
+    if (username) body.username = username;
+    if (password) body.password = password;
+    
+    return this.http.patch<{ message: string; user: User }>(`${this.apiUrl}/auth/profile`, body).pipe(
+      tap(response => {
+        // Update current user in the service
+        this.currentUserSubject.next(response.user);
+      })
+    );
+  }
 }
 

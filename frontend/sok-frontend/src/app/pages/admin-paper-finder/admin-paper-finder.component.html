@@ -1,0 +1,642 @@
+<div class="min-h-screen bg-slate-50">
+  <!-- Sidebar Navigation -->
+  <nav class="fixed left-0 top-0 h-full w-64 bg-slate-900 text-white p-6 hidden md:block">
+    <div class="flex items-center gap-3 mb-10">
+      <div class="p-2 bg-blue-500 rounded-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+        </svg>
+      </div>
+      <h1 class="text-xl font-bold tracking-tight">SoK Explorer</h1>
+    </div>
+    
+    <div class="space-y-1">
+      <p class="text-xs font-semibold text-slate-500 uppercase mb-4 px-2">Research Dashboard</p>
+      <a routerLink="/app/papers" routerLinkActive="bg-slate-800 text-blue-400" [routerLinkActiveOptions]="{exact: false}" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-400 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+        </svg>
+        <span>Literature Review</span>
+      </a>
+      <a routerLink="/app/settings" routerLinkActive="bg-slate-800 text-blue-400" [routerLinkActiveOptions]="{exact: false}" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-400 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg>
+        <span>My Settings</span>
+      </a>
+    </div>
+
+    <div class="space-y-1 mt-6" *ngIf="isSuperAdmin()">
+      <p class="text-xs font-semibold text-slate-500 uppercase mb-4 px-2">Administration</p>
+      <a routerLink="/app/admin/users" routerLinkActive="bg-slate-800 text-blue-400" [routerLinkActiveOptions]="{exact: false}" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-400 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <span>User Management</span>
+      </a>
+      <a routerLink="/app/admin/tags" routerLinkActive="bg-slate-800 text-blue-400" [routerLinkActiveOptions]="{exact: false}" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-400 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+        </svg>
+        <span>Tags</span>
+      </a>
+      <a routerLink="/app/admin/threat-models" routerLinkActive="bg-slate-800 text-blue-400" [routerLinkActiveOptions]="{exact: false}" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-400 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <span>Threat Models</span>
+      </a>
+      <a routerLink="/app/admin/settings" routerLinkActive="bg-slate-800 text-blue-400" [routerLinkActiveOptions]="{exact: false}" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-400 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <span>Settings</span>
+      </a>
+    </div>
+
+    <div class="space-y-1 mt-6">
+      <p class="text-xs font-semibold text-slate-500 uppercase mb-4 px-2">Tools</p>
+      <a routerLink="/app/admin/paper-finder" routerLinkActive="bg-slate-800 text-blue-400" [routerLinkActiveOptions]="{exact: false}" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-400 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <span>Paper Finder Tool</span>
+      </a>
+    </div>
+
+    <div class="absolute bottom-10 left-6 right-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700">
+      <p class="text-sm font-medium" *ngIf="currentUser$ | async as user">{{ user.displayName }}</p>
+      <p class="text-xs text-slate-400" *ngIf="currentUser$ | async as user">{{ user.role }}</p>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="md:ml-64 p-8">
+    <header class="mb-8">
+      <h2 class="text-3xl font-bold text-slate-800 mb-2">Multi-Source Paper Finder Tool</h2>
+      <p class="text-slate-500">Search and add research papers from multiple academic databases simultaneously</p>
+    </header>
+
+    <!-- Comprehensive Tool Description -->
+    <div class="space-y-6 mb-8">
+      <!-- What is this tool? -->
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-lg shadow-sm overflow-hidden">
+        <button 
+          (click)="toggleSection('whatIsTool')"
+          class="w-full flex items-center justify-between p-6 hover:bg-blue-100/50 transition-colors"
+        >
+          <div class="flex items-center gap-4">
+            <div class="flex-shrink-0">
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800">What is this tool?</h3>
+          </div>
+          <svg 
+            class="w-6 h-6 text-slate-600 transition-transform"
+            [class.rotate-180]="expandedSections.whatIsTool"
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div 
+          class="overflow-hidden transition-all duration-300"
+          [class.max-h-0]="!expandedSections.whatIsTool"
+          [class.max-h-[2000px]]="expandedSections.whatIsTool"
+        >
+          <div class="px-6 pb-6">
+            <p class="text-slate-700 mb-4 leading-relaxed">
+              The <strong>Multi-Source Paper Finder Tool</strong> is an intelligent academic search aggregator designed specifically for 
+              Systematization of Knowledge (SoK) research. Instead of manually searching multiple databases one by one, this tool 
+              simultaneously queries <strong>five major academic sources</strong> and intelligently merges their results into a unified, 
+              deduplicated list.
+            </p>
+            <div class="bg-white/60 rounded-lg p-4 mb-4">
+              <p class="text-sm font-semibold text-slate-800 mb-2">Supported Academic Databases:</p>
+              <ul class="space-y-2 text-sm text-slate-700">
+                <li class="flex items-start gap-2">
+                  <span class="text-blue-600 font-bold">•</span>
+                  <span><strong>DBLP:</strong> Computer Science Bibliography - Best for conference papers (USENIX, NDSS, CCS, etc.)</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-purple-600 font-bold">•</span>
+                  <span><strong>Semantic Scholar:</strong> AI-powered summaries, citation counts, and influential paper metrics</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-green-600 font-bold">•</span>
+                  <span><strong>OpenAlex:</strong> Open alternative to Google Scholar with comprehensive metadata</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-orange-600 font-bold">•</span>
+                  <span><strong>arXiv:</strong> Preprints and cutting-edge research before formal publication</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-indigo-600 font-bold">•</span>
+                  <span><strong>Crossref:</strong> DOI validation and authoritative publication metadata</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Why use this tool? -->
+      <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-lg shadow-sm overflow-hidden">
+        <button 
+          (click)="toggleSection('whyUseTool')"
+          class="w-full flex items-center justify-between p-6 hover:bg-green-100/50 transition-colors"
+        >
+          <div class="flex items-center gap-4">
+            <div class="flex-shrink-0">
+              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800">Why use this tool?</h3>
+          </div>
+          <svg 
+            class="w-6 h-6 text-slate-600 transition-transform"
+            [class.rotate-180]="expandedSections.whyUseTool"
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div 
+          class="overflow-hidden transition-all duration-300"
+          [class.max-h-0]="!expandedSections.whyUseTool"
+          [class.max-h-[2000px]]="expandedSections.whyUseTool"
+        >
+          <div class="px-6 pb-6">
+            <div class="space-y-3 text-slate-700">
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <div>
+                  <p class="font-semibold mb-1">Time Efficiency</p>
+                  <p class="text-sm">Search all five databases in parallel instead of visiting each one separately. What would take 10-15 minutes now takes seconds.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <div>
+                  <p class="font-semibold mb-1">Comprehensive Coverage</p>
+                  <p class="text-sm">No single database has everything. DBLP excels at conferences, arXiv has preprints, Semantic Scholar provides AI insights. This tool combines them all.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <div>
+                  <p class="font-semibold mb-1">Automatic Deduplication</p>
+                  <p class="text-sm">The same paper found in multiple sources is automatically merged, showing you all sources where it was discovered. No manual duplicate checking needed.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <div>
+                  <p class="font-semibold mb-1">Methodology Documentation</p>
+                  <p class="text-sm">Every search is automatically logged with query terms, sources used, and timestamp. This creates an audit trail for your SoK methodology section, proving systematic paper selection.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <div>
+                  <p class="font-semibold mb-1">AI-Powered Insights</p>
+                  <p class="text-sm">For Semantic Scholar papers, get instant TLDR summaries and abstract previews to quickly assess relevance without opening each paper.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How to use effectively -->
+      <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 rounded-lg shadow-sm overflow-hidden">
+        <button 
+          (click)="toggleSection('howToUse')"
+          class="w-full flex items-center justify-between p-6 hover:bg-purple-100/50 transition-colors"
+        >
+          <div class="flex items-center gap-4">
+            <div class="flex-shrink-0">
+              <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800">How to use this tool effectively</h3>
+          </div>
+          <svg 
+            class="w-6 h-6 text-slate-600 transition-transform"
+            [class.rotate-180]="expandedSections.howToUse"
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div 
+          class="overflow-hidden transition-all duration-300"
+          [class.max-h-0]="!expandedSections.howToUse"
+          [class.max-h-[2000px]]="expandedSections.howToUse"
+        >
+          <div class="px-6 pb-6">
+            <div class="space-y-4">
+              <div>
+                <p class="font-semibold text-slate-800 mb-2">1. Choose Your Search Sources</p>
+                <p class="text-sm text-slate-700 mb-2">
+                  Select which databases to search based on your needs:
+                </p>
+                <ul class="text-sm text-slate-600 space-y-1 ml-4 list-disc">
+                  <li><strong>For conference papers:</strong> Enable DBLP and OpenAlex</li>
+                  <li><strong>For recent preprints:</strong> Enable arXiv</li>
+                  <li><strong>For comprehensive coverage:</strong> Enable all sources</li>
+                  <li><strong>For AI summaries:</strong> Ensure Semantic Scholar is enabled</li>
+                </ul>
+              </div>
+              <div>
+                <p class="font-semibold text-slate-800 mb-2">2. Craft Effective Search Queries</p>
+                <p class="text-sm text-slate-700 mb-2">
+                  Use specific, relevant keywords:
+                </p>
+                <ul class="text-sm text-slate-600 space-y-1 ml-4 list-disc">
+                  <li>Combine multiple terms: <code class="bg-slate-200 px-1 rounded">"browser extension" AND security</code></li>
+                  <li>Use domain-specific terms: <code class="bg-slate-200 px-1 rounded">manifest v3</code>, <code class="bg-slate-200 px-1 rounded">web extension privacy</code></li>
+                  <li>Try variations: <code class="bg-slate-200 px-1 rounded">Chrome extension</code>, <code class="bg-slate-200 px-1 rounded">Firefox add-on</code></li>
+                  <li>Include venue names: <code class="bg-slate-200 px-1 rounded">USENIX</code>, <code class="bg-slate-200 px-1 rounded">NDSS</code> (works best with DBLP)</li>
+                </ul>
+              </div>
+              <div>
+                <p class="font-semibold text-slate-800 mb-2">3. Review and Filter Results</p>
+                <p class="text-sm text-slate-700 mb-2">
+                  After searching, you'll see:
+                </p>
+                <ul class="text-sm text-slate-600 space-y-1 ml-4 list-disc">
+                  <li><strong>Source badges:</strong> Shows which databases found each paper</li>
+                  <li><strong>Citation counts:</strong> Helps identify influential papers</li>
+                  <li><strong>Abstract previews:</strong> Quick relevance assessment</li>
+                  <li><strong>AI summaries:</strong> Click "Get AI Summary" for Semantic Scholar papers</li>
+                </ul>
+              </div>
+              <div>
+                <p class="font-semibold text-slate-800 mb-2">4. Add Papers to Your Collection</p>
+                <p class="text-sm text-slate-700 mb-2">
+                  When you find relevant papers:
+                </p>
+                <ul class="text-sm text-slate-600 space-y-1 ml-4 list-disc">
+                  <li>Click "Add Paper" to open the form</li>
+                  <li>Review and edit metadata if needed</li>
+                  <li>Set reading status (To Read, In Progress, Read)</li>
+                  <li>The system automatically logs the search query and sources used</li>
+                </ul>
+              </div>
+              <div class="bg-white/60 rounded-lg p-3 mt-3">
+                <p class="text-sm font-semibold text-slate-800 mb-1">💡 Pro Tip:</p>
+                <p class="text-sm text-slate-700">
+                  Use the predefined quick searches for common topics, then refine your query based on initial results. 
+                  Papers found in multiple sources are often more influential and should be prioritized.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
+      <div class="flex gap-4 mb-4">
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          (keyup.enter)="search()"
+          placeholder="Enter search query (e.g., 'browser extension security')"
+          class="flex-1 px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+        />
+        <input 
+          type="number" 
+          [(ngModel)]="maxResults" 
+          min="1" 
+          max="100"
+          placeholder="Max results"
+          class="w-32 px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+        />
+        <button 
+          (click)="search()" 
+          [disabled]="searching"
+          class="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white px-6 py-2 rounded-lg transition-all shadow-lg shadow-blue-200"
+        >
+          <span *ngIf="!searching">Search</span>
+          <span *ngIf="searching">Searching...</span>
+        </button>
+      </div>
+
+      <!-- Source Selection -->
+      <div class="mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+        <p class="text-sm font-medium text-slate-700 mb-3">Search Sources:</p>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <label 
+            *ngFor="let source of availableSources"
+            class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-white transition-colors"
+          >
+            <input
+              type="checkbox"
+              [checked]="isSourceSelected(source.id)"
+              (change)="toggleSource(source.id)"
+              class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+            />
+            <div>
+              <p class="text-sm font-medium text-slate-800">{{ source.name }}</p>
+              <p class="text-xs text-slate-500">{{ source.description }}</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Predefined Queries -->
+      <div class="mt-4">
+        <p class="text-sm text-slate-500 mb-2">Quick searches:</p>
+        <div class="flex flex-wrap gap-2">
+          <button 
+            *ngFor="let query of predefinedQueries"
+            (click)="usePredefinedQuery(query)"
+            class="px-3 py-1 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md transition-colors"
+          >
+            {{ query }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div *ngIf="papers.length > 0" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold text-slate-800">Search Results</h3>
+        <span class="text-sm text-slate-500">Found {{ totalResults }} papers (showing {{ papers.length }})</span>
+      </div>
+
+      <div class="space-y-4">
+        <div 
+          *ngFor="let paper of papers" 
+          class="p-4 border border-slate-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all"
+        >
+          <div class="flex justify-between items-start gap-4">
+            <div class="flex-1">
+              <!-- Source Badges -->
+              <div class="flex flex-wrap gap-2 mb-2">
+                <span 
+                  *ngFor="let source of (paper.sources || [paper.source])"
+                  [class]="'px-2 py-0.5 rounded-full text-xs font-medium ' + getSourceBadgeColor(source)"
+                >
+                  {{ source }}
+                </span>
+                <span *ngIf="(paper.sources || []).length > 1" class="px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  Found in {{ (paper.sources || []).length }} sources
+                </span>
+              </div>
+
+              <h4 class="text-lg font-bold text-slate-800 mb-2">{{ paper.title }}</h4>
+              <p class="text-slate-600 text-sm mb-2">by {{ paper.authors }}</p>
+              
+              <!-- Abstract Preview -->
+              <p *ngIf="paper.abstract" class="text-sm text-slate-600 mb-3 line-clamp-2">
+                {{ paper.abstract }}
+              </p>
+
+              <div class="flex flex-wrap gap-4 text-sm text-slate-500 mb-3">
+                <span *ngIf="paper.venue">{{ paper.venue }}</span>
+                <span *ngIf="paper.year">{{ paper.year }}</span>
+                <span *ngIf="paper.citationCount !== undefined" class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded">
+                  {{ paper.citationCount }} citations
+                </span>
+                <span *ngIf="paper.influentialCitationCount" class="px-2 py-0.5 bg-purple-50 text-purple-700 rounded">
+                  {{ paper.influentialCitationCount }} influential
+                </span>
+              </div>
+
+              <!-- Links -->
+              <div class="flex gap-3 mt-3">
+                <a 
+                  *ngIf="paper.url" 
+                  [href]="paper.url" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  (click)="$event.stopPropagation()"
+                  class="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                >
+                  View Paper →
+                </a>
+                <button
+                  *ngIf="paper.semanticScholarId"
+                  (click)="getSummary(paper); $event.stopPropagation()"
+                  [disabled]="loadingSummary"
+                  class="text-purple-600 hover:text-purple-700 text-sm font-medium disabled:opacity-50"
+                >
+                  <span *ngIf="!loadingSummary">Get AI Summary</span>
+                  <span *ngIf="loadingSummary">Loading...</span>
+                </button>
+              </div>
+            </div>
+            <button 
+              (click)="selectPaper(paper); $event.stopPropagation()"
+              class="ml-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex-shrink-0"
+            >
+              Add Paper
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!searching && papers.length === 0 && searchQuery" class="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+      <svg class="mx-auto text-slate-300 mb-4" width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      <p class="text-slate-500 font-medium">No papers found. Try a different search query.</p>
+    </div>
+  </main>
+
+  <!-- AI Summary Modal -->
+  <div *ngIf="showSummaryModal && paperSummary" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="closeSummaryModal()">
+    <div 
+      class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Header -->
+      <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-gradient-to-r from-purple-50 to-indigo-50">
+        <div class="flex items-center gap-3">
+          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+          </svg>
+          <h3 class="text-xl font-bold text-slate-800">AI Summary (Semantic Scholar)</h3>
+        </div>
+        <button 
+          (click)="closeSummaryModal()" 
+          class="p-2 hover:bg-white/60 rounded-lg transition-colors text-slate-600 hover:text-slate-800"
+          title="Close"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Scrollable Content -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-5">
+        <!-- Paper Title -->
+        <div>
+          <h4 class="text-lg font-bold text-slate-800 leading-tight">{{ paperSummary.title }}</h4>
+        </div>
+
+        <!-- TLDR Section -->
+        <div *ngIf="paperSummary.tldr" class="bg-gradient-to-r from-purple-50 to-indigo-50 border-l-4 border-purple-500 rounded-lg p-5 shadow-sm">
+          <div class="flex items-center gap-2 mb-3">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            <p class="text-sm font-bold text-purple-800 uppercase tracking-wide">TLDR (AI Summary)</p>
+          </div>
+          <p class="text-slate-700 leading-relaxed">{{ paperSummary.tldr }}</p>
+        </div>
+
+        <!-- Abstract Section -->
+        <div *ngIf="paperSummary.abstract" class="bg-slate-50 border border-slate-200 rounded-lg p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <p class="text-sm font-bold text-slate-700 uppercase tracking-wide">Abstract</p>
+          </div>
+          <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">{{ paperSummary.abstract }}</p>
+        </div>
+
+        <!-- No content message -->
+        <div *ngIf="!paperSummary.tldr && !paperSummary.abstract" class="text-center py-8 text-slate-500">
+          <svg class="w-12 h-12 mx-auto mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <p>No summary or abstract available for this paper.</p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="p-5 border-t border-slate-200 bg-slate-50 flex justify-end">
+        <button 
+          (click)="closeSummaryModal()" 
+          class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm hover:shadow-md"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Paper Modal -->
+  <div *ngIf="showAddModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+        <h3 class="text-xl font-bold">Add Paper</h3>
+        <button (click)="closeAddModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Title *</label>
+          <input 
+            type="text" 
+            [(ngModel)]="paperForm.title" 
+            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            required
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Authors *</label>
+          <input 
+            type="text" 
+            [(ngModel)]="paperForm.authors" 
+            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            required
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Venue</label>
+            <input 
+              type="text" 
+              [(ngModel)]="paperForm.venue" 
+              class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Year</label>
+            <input 
+              type="number" 
+              [(ngModel)]="paperForm.year" 
+              min="1900" 
+              max="2100"
+              class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Link to PDF/URL</label>
+          <input 
+            type="text" 
+            [(ngModel)]="paperForm.url" 
+            placeholder="https://..."
+            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Reading Status</label>
+          <select 
+            [(ngModel)]="paperForm.readingStatus" 
+            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+          >
+            <option value="TO_READ">To Read</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="READ">Read</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="p-6 bg-slate-50 flex gap-3 sticky bottom-0 bg-white border-t border-slate-200">
+        <button 
+          (click)="closeAddModal()" 
+          class="flex-1 px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
+        >
+          Cancel
+        </button>
+        <button 
+          (click)="addPaper()" 
+          [disabled]="addingPaper || !paperForm.title || !paperForm.authors"
+          class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-medium rounded-lg shadow-md shadow-blue-200 transition-colors"
+        >
+          <span *ngIf="!addingPaper">Add Paper</span>
+          <span *ngIf="addingPaper">Adding...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

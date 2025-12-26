@@ -1,78 +1,103 @@
-# Viewing the Database in MongoDB Compass
+# MongoDB Compass Guide
 
-## Database Name
-Your SoK Research Dashboard uses the database: **`sok_research`**
+## Connecting to the Local MongoDB Instance
 
-## Connecting to MongoDB (Running in Docker)
-
-Since MongoDB is running in Docker, you can connect to it directly:
-
-1. **Open MongoDB Compass**
-   - Click "New Connection" or use the connection string field
-
-2. **Connection String**
-   - Enter: `mongodb://localhost:27017`
-   - OR click "Fill in connection fields individually" and use:
-     - **Host:** `localhost`
-     - **Port:** `27017`
-   - Click **"Connect"**
-
-3. **Verify MongoDB is Running**
+1. **Start the MongoDB Container** (if not already running):
    ```powershell
-   docker ps | Select-String mongo
+   docker start sok-research-mongodb-local
    ```
-   You should see `sok-research-mongodb-local` container running
 
-## How to View the Database
+2. **Open MongoDB Compass** and connect to:
+   ```
+   mongodb://localhost:27017
+   ```
 
-1. **Look for the Database**
-   - After connecting, you'll see a list of databases
-   - Scroll through the database list
-   - Look for **`sok_research`**
+3. **The database should appear** once it contains at least one document in a user collection.
 
-2. **If the Database Doesn't Appear**
-   - Click the **Refresh** button (circular arrow icon) in MongoDB Compass
-   - Make sure your backend server is running (it creates the database on first connection)
-   - The database is created automatically when data is first written
-   - If you haven't registered any users or added papers yet, the database won't exist
+## Why the Database Might Not Appear
 
-3. **View Collections**
-   - Click on **`sok_research`** to expand it
-   - You should see these collections:
-     - **`users`** - User accounts and authentication data
-     - **`papers`** - Research papers
-     - **`notes`** - Notes on papers
-     - **`audit_logs`** - Audit trail of actions
+MongoDB Compass only displays databases that:
+- Have at least one document in a non-system collection
+- Are not empty
 
-4. **Browse Data**
-   - Click on any collection name to view its documents
-   - Use the filter/search bar to query specific data
-   - Click on any document to view/edit its JSON
+If the `sok_research` database doesn't appear:
 
-## Connection String Details
-The database connection is configured as:
-- **Connection:** `mongodb://localhost:27017` (from Docker container)
-- **Database:** `sok_research`
-- **Full URI:** `mongodb://localhost:27017/sok_research`
-- **Docker Container:** `sok-research-mongodb-local` (port 27017 exposed)
+### Solution 1: Populate the Database
+
+Run the seed script to populate the database with initial data:
+
+```powershell
+cd backend
+npm run seed-papers
+```
+
+This will:
+- Create tags and threat models
+- Create papers with proper associations
+- Make the database visible in Compass
+
+### Solution 2: Refresh Compass
+
+1. Click the **refresh button** (circular arrow) in MongoDB Compass
+2. Or press **F5** to refresh
+3. The database should appear in the left sidebar
+
+### Solution 3: Check Database Status
+
+In MongoDB Compass Shell (mongosh), you can verify:
+
+```javascript
+// List all databases
+show dbs
+
+// Use the database
+use sok_research
+
+// List collections
+show collections
+
+// Count documents in a collection
+db.papers.countDocuments()
+db.users.countDocuments()
+db.tags.countDocuments()
+db.threatmodels.countDocuments()
+```
+
+### Solution 4: Manually Create a Document
+
+If you need to make the database visible immediately, you can insert a test document:
+
+```javascript
+use sok_research
+db.papers.insertOne({ 
+  title: "Test Paper", 
+  authors: "Test Author",
+  createdByUserId: null,
+  createdAt: new Date() 
+})
+```
+
+Then refresh Compass.
+
+## Expected Collections
+
+Once populated, the `sok_research` database should contain:
+
+- `papers` - Research papers
+- `users` - User accounts
+- `tags` - Paper tags
+- `threatmodels` - Threat models
+- `notes` - User notes on papers
+- `audit_logs` - System audit logs
 
 ## Troubleshooting
 
-**Can't connect to MongoDB?**
-- Check if Docker container is running: `docker ps`
-- Check if port 27017 is accessible: The container should show `0.0.0.0:27017->27017/tcp`
-- Try restarting the container: `docker start sok-research-mongodb-local`
+**Database appears in `show dbs` but not in Compass sidebar:**
+- Refresh Compass (F5 or refresh button)
+- Make sure there's at least one document in a collection
+- Collections starting with `_` or `__` might not count as user collections
 
-**Database not showing?**
-- Ensure your backend server is running (it creates the database on first connection)
-- Check backend console logs for "Connected to MongoDB" message
-- Refresh MongoDB Compass view (click the refresh button)
-- The database is only created when data is first written - register a user or add a paper first
-
-**Can't see collections?**
-- Collections are created when first document is inserted
-- If you just started the app, you may need to:
-  1. Register a user (creates `users` collection)
-  2. Add a paper (creates `papers` collection)
-  3. Add a note (creates `notes` collection)
-
+**Can't connect:**
+- Verify the Docker container is running: `docker ps | findstr mongodb`
+- Check connection string: `mongodb://localhost:27017`
+- Try reconnecting in Compass

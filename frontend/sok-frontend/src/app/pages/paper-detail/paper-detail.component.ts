@@ -6,6 +6,10 @@ import { ToastrService } from 'ngx-toastr';
 import { PaperService, Paper } from '../../services/paper.service';
 import { NoteService, Note } from '../../services/note.service';
 import { AuthService } from '../../services/auth.service';
+import { TagService, Tag } from '../../services/tag.service';
+import { ThreatModelService, ThreatModel } from '../../services/threat-model.service';
+import { SettingsService } from '../../services/settings.service';
+import { FavoriteService } from '../../services/favorite.service';
 
 @Component({
   selector: 'app-paper-detail',
@@ -20,10 +24,15 @@ export class PaperDetailComponent implements OnInit {
   private noteService = inject(NoteService);
   private authService = inject(AuthService);
   private toastr = inject(ToastrService);
+  private tagService = inject(TagService);
+  private threatModelService = inject(ThreatModelService);
+  private settingsService = inject(SettingsService);
+  private favoriteService = inject(FavoriteService);
 
   paper: Paper | null = null;
   notes: Note[] = [];
   newNoteContent = '';
+  settings$ = this.settingsService.settings$;
   newNoteVisibility: 'PRIVATE' | 'PUBLIC' = 'PUBLIC';
   loading = false;
   router = inject(Router);
@@ -52,9 +61,15 @@ export class PaperDetailComponent implements OnInit {
       reproducibility: { code: '', data: '' }
     }
   };
-  tagsInputEdit = '';
-  threatModelInput = '';
+  selectedTagIds: string[] = [];
+  selectedThreatModelIds: string[] = [];
+  newTagName = '';
+  newThreatModelName = '';
   editing = false;
+  
+  // Tag and Threat Model data
+  tags: Tag[] = [];
+  threatModels: ThreatModel[] = [];
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -62,6 +77,30 @@ export class PaperDetailComponent implements OnInit {
       this.loadPaper(id);
       this.loadNotes(id);
     }
+    this.loadTags();
+    this.loadThreatModels();
+  }
+
+  loadTags() {
+    this.tagService.getTags().subscribe({
+      next: (response) => {
+        this.tags = response.tags;
+      },
+      error: (err) => {
+        console.error('Failed to load tags:', err);
+      }
+    });
+  }
+
+  loadThreatModels() {
+    this.threatModelService.getThreatModels().subscribe({
+      next: (response) => {
+        this.threatModels = response.threatModels;
+      },
+      error: (err) => {
+        console.error('Failed to load threat models:', err);
+      }
+    });
   }
 
   loadPaper(id: string) {
@@ -111,6 +150,39 @@ export class PaperDetailComponent implements OnInit {
     return this.authService.canAddNotes();
   }
 
+  toggleFavorite() {
+    if (!this.paper || !this.paper._id) return;
+    
+    const isFavorite = this.paper.isFavorite || false;
+    if (isFavorite) {
+      this.favoriteService.removeFavorite(this.paper._id).subscribe({
+        next: () => {
+          if (this.paper) {
+            this.paper.isFavorite = false;
+          }
+          this.toastr.success('Removed from favorites');
+        },
+        error: (err) => {
+          console.error('Failed to remove favorite:', err);
+          this.toastr.error('Failed to remove from favorites');
+        }
+      });
+    } else {
+      this.favoriteService.addFavorite(this.paper._id).subscribe({
+        next: () => {
+          if (this.paper) {
+            this.paper.isFavorite = true;
+          }
+          this.toastr.success('Added to favorites');
+        },
+        error: (err) => {
+          console.error('Failed to add favorite:', err);
+          this.toastr.error('Failed to add to favorites');
+        }
+      });
+    }
+  }
+
   isSuperAdmin(): boolean {
     return this.authService.isSuperAdmin();
   }
@@ -135,8 +207,23 @@ export class PaperDetailComponent implements OnInit {
         } : { code: '', data: '' }
       }
     };
-    this.tagsInputEdit = this.paper.tags?.join(', ') || '';
-    this.threatModelInput = this.editPaper.sok.threatModel?.join(', ') || '';
+    
+    // Map paper tags to tag IDs
+    this.selectedTagIds = [];
+    if (this.paper.tags && this.paper.tags.length > 0) {
+      this.selectedTagIds = this.paper.tags
+        .map(tagName => this.tags.find(t => t.name === tagName)?._id)
+        .filter(id => id !== undefined) as string[];
+    }
+    
+    // Map paper threat models to threat model IDs
+    this.selectedThreatModelIds = [];
+    if (existingSok.threatModel && existingSok.threatModel.length > 0) {
+      this.selectedThreatModelIds = existingSok.threatModel
+        .map(tmName => this.threatModels.find(tm => tm.name === tmName)?._id)
+        .filter(id => id !== undefined) as string[];
+    }
+    
     this.showEditModal = true;
   }
 
@@ -153,15 +240,86 @@ export class PaperDetailComponent implements OnInit {
         reproducibility: { code: '', data: '' }
       }
     };
-    this.tagsInputEdit = '';
-    this.threatModelInput = '';
+    this.selectedTagIds = [];
+    this.selectedThreatModelIds = [];
+    this.newTagName = '';
+    this.newThreatModelName = '';
   }
 
-  updateThreatModel(value: string) {
-    if (!this.editPaper.sok.threatModel) {
-      this.editPaper.sok.threatModel = [];
+  toggleTag(tagId: string) {
+    const index = this.selectedTagIds.indexOf(tagId);
+    if (index > -1) {
+      this.selectedTagIds.splice(index, 1);
+    } else {
+      this.selectedTagIds.push(tagId);
     }
-    this.editPaper.sok.threatModel = value.split(',').map(t => t.trim()).filter(t => t.length > 0);
+  }
+
+  toggleThreatModel(threatModelId: string) {
+    const index = this.selectedThreatModelIds.indexOf(threatModelId);
+    if (index > -1) {
+      this.selectedThreatModelIds.splice(index, 1);
+    } else {
+      this.selectedThreatModelIds.push(threatModelId);
+    }
+  }
+
+  addNewTag() {
+    if (!this.newTagName.trim()) return;
+    
+    const tagName = this.newTagName.trim().toLowerCase();
+    this.tagService.createTag({ 
+      name: tagName,
+      displayName: this.newTagName.trim()
+    }).subscribe({
+      next: (response) => {
+        this.tags.push(response.tag);
+        this.selectedTagIds.push(response.tag._id);
+        this.newTagName = '';
+        this.toastr.success('Tag created successfully');
+      },
+      error: (err) => {
+        console.error('Failed to create tag:', err);
+        this.toastr.error(err.error?.message || 'Failed to create tag');
+      }
+    });
+  }
+
+  addNewThreatModel() {
+    if (!this.newThreatModelName.trim()) return;
+    
+    const threatModelName = this.newThreatModelName.trim().toLowerCase();
+    this.threatModelService.createThreatModel({ 
+      name: threatModelName,
+      displayName: this.newThreatModelName.trim()
+    }).subscribe({
+      next: (response) => {
+        this.threatModels.push(response.threatModel);
+        this.selectedThreatModelIds.push(response.threatModel._id);
+        this.newThreatModelName = '';
+        this.toastr.success('Threat model created successfully');
+      },
+      error: (err) => {
+        console.error('Failed to create threat model:', err);
+        this.toastr.error(err.error?.message || 'Failed to create threat model');
+      }
+    });
+  }
+
+  isTagSelected(tagId: string): boolean {
+    return this.selectedTagIds.includes(tagId);
+  }
+
+  isThreatModelSelected(threatModelId: string): boolean {
+    return this.selectedThreatModelIds.includes(threatModelId);
+  }
+
+  filterByTag(tagName: string) {
+    this.router.navigate(['/app/papers'], { queryParams: { tag: tagName } });
+  }
+
+  filterByThreatModel(threatModelName: string) {
+    this.router.navigate(['/app/papers'], { queryParams: { threatModel: threatModelName } });
   }
 
   updateReproducibilityCode(value: string) {
@@ -220,6 +378,16 @@ export class PaperDetailComponent implements OnInit {
       linkToSend = '';
     }
 
+    // Get selected tag names
+    const selectedTagNames = this.selectedTagIds
+      .map(id => this.tags.find(t => t._id === id)?.name)
+      .filter(name => name !== undefined) as string[];
+
+    // Get selected threat model names
+    const selectedThreatModelNames = this.selectedThreatModelIds
+      .map(id => this.threatModels.find(tm => tm._id === id)?.name)
+      .filter(name => name !== undefined) as string[];
+
     this.editing = true;
     const paperData: any = {
       title: this.editPaper.title,
@@ -227,10 +395,10 @@ export class PaperDetailComponent implements OnInit {
       venue: this.editPaper.venue,
       year: this.editPaper.year ? Number(this.editPaper.year) : undefined,
       readingStatus: this.editPaper.readingStatus,
-      tags: this.tagsInputEdit.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0),
+      tags: selectedTagNames,
       sok: {
         ...this.editPaper.sok,
-        threatModel: this.editPaper.sok.threatModel || []
+        threatModel: selectedThreatModelNames
       }
     };
     
