@@ -30,6 +30,9 @@ export class AdminThreatModelsComponent implements OnInit {
   selectedThreatModelIds: Set<string> = new Set();
   showDeleteConfirmModal = false;
   isDeleting = false;
+  showPapersUsingThreatModelModal = false;
+  papersUsingThreatModel: Array<{ _id: string; title: string }> = [];
+  threatModelToDelete: ThreatModel | null = null;
 
   // Form fields
   threatModelName = '';
@@ -145,10 +148,7 @@ export class AdminThreatModelsComponent implements OnInit {
   }
 
   deleteThreatModel(threatModel: ThreatModel) {
-    if (!confirm(`Are you sure you want to delete the threat model "${threatModel.displayName}"?`)) {
-      return;
-    }
-
+    // Try to delete - backend will return papers using this threat model if any
     this.threatModelService.deleteThreatModel(threatModel._id).subscribe({
       next: () => {
         this.loadThreatModels();
@@ -156,9 +156,22 @@ export class AdminThreatModelsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to delete threat model:', err);
-        this.toastr.error(err.error?.message || 'Failed to delete threat model');
+        if (err.status === 400 && err.error?.papersUsingThreatModel && err.error.papersUsingThreatModel.length > 0) {
+          // Show modal with papers using this threat model
+          this.threatModelToDelete = threatModel;
+          this.papersUsingThreatModel = err.error.papersUsingThreatModel;
+          this.showPapersUsingThreatModelModal = true;
+        } else {
+          this.toastr.error(err.error?.message || 'Failed to delete threat model');
+        }
       }
     });
+  }
+
+  closePapersUsingThreatModelModal() {
+    this.showPapersUsingThreatModelModal = false;
+    this.papersUsingThreatModel = [];
+    this.threatModelToDelete = null;
   }
 
   isSuperAdmin(): boolean {

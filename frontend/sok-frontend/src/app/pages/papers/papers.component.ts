@@ -42,6 +42,7 @@ export class PapersComponent implements OnInit {
   selectedPaperIds: Set<string> = new Set();
   showDeleteConfirmModal = false;
   isDeleting = false;
+  showExportMenu = false;
   newPaper: Partial<Paper> = {
     title: '',
     authors: '',
@@ -67,6 +68,9 @@ export class PapersComponent implements OnInit {
   selectedYearFilter: number | null = null;
   availableVenues: string[] = [];
   availableYears: number[] = [];
+
+  // Text search
+  searchQuery = '';
 
   ngOnInit() {
     this.loadTags();
@@ -158,8 +162,20 @@ export class PapersComponent implements OnInit {
       filtered = this.papers.filter(p => p.readingStatus === this.filter);
     }
     
+    // Apply text search if query exists
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.trim().toLowerCase();
+      filtered = filtered.filter(paper => {
+        const titleMatch = paper.title?.toLowerCase().includes(query);
+        const authorsMatch = paper.authors?.toLowerCase().includes(query);
+        const venueMatch = paper.venue?.toLowerCase().includes(query);
+        const abstractMatch = paper.sok?.keyFindings?.toLowerCase().includes(query);
+        return titleMatch || authorsMatch || venueMatch || abstractMatch;
+      });
+    }
+    
     // Sort favorites first when no filters are applied
-    if (!this.selectedTagFilter && !this.selectedThreatModelFilter && !this.selectedVenueFilter && !this.selectedYearFilter) {
+    if (!this.selectedTagFilter && !this.selectedThreatModelFilter && !this.selectedVenueFilter && !this.selectedYearFilter && !this.searchQuery.trim()) {
       filtered.sort((a, b) => {
         const aIsFavorite = a.isFavorite ? 1 : 0;
         const bIsFavorite = b.isFavorite ? 1 : 0;
@@ -172,6 +188,10 @@ export class PapersComponent implements OnInit {
     }
     
     this.filteredPapers = filtered;
+  }
+
+  onSearchChange() {
+    this.applyFilter();
   }
 
   setFilter(filter: string) {
@@ -594,6 +614,112 @@ export class PapersComponent implements OnInit {
     if (!threatModelName) return '';
     const threatModel = this.threatModels.find(tm => tm.name === threatModelName);
     return threatModel?.displayName || threatModelName;
+  }
+
+  // Export functionality
+  exportToBibTeX() {
+    if (this.filteredPapers.length === 0) {
+      this.toastr.warning('No papers to export');
+      return;
+    }
+
+    let bibtex = '';
+    this.filteredPapers.forEach((paper, index) => {
+      const key = `paper${index + 1}_${paper.year || 'unknown'}`;
+      const title = paper.title?.replace(/[{}]/g, '') || 'Untitled';
+      const authors = paper.authors?.replace(/[{}]/g, '') || 'Unknown';
+      const venue = paper.venue?.replace(/[{}]/g, '') || '';
+      const year = paper.year || '';
+      const url = paper.link || '';
+
+      bibtex += `@inproceedings{${key},\n`;
+      bibtex += `  title={${title}},\n`;
+      bibtex += `  author={${authors}},\n`;
+      if (venue) bibtex += `  booktitle={${venue}},\n`;
+      if (year) bibtex += `  year={${year}},\n`;
+      if (url) bibtex += `  url={${url}},\n`;
+      bibtex += `}\n\n`;
+    });
+
+    this.downloadFile(bibtex, 'papers.bib', 'text/plain');
+    this.toastr.success(`Exported ${this.filteredPapers.length} papers to BibTeX`);
+  }
+
+  exportToCSV() {
+    if (this.filteredPapers.length === 0) {
+      this.toastr.warning('No papers to export');
+      return;
+    }
+
+    const headers = ['Title', 'Authors', 'Venue', 'Year', 'Link', 'Reading Status', 'Tags', 'Threat Models', 'Key Findings'];
+    const rows = this.filteredPapers.map(paper => {
+      const tags = paper.tags?.map(t => this.getTagDisplayName(t)).join('; ') || '';
+      const threatModels = paper.sok?.threatModel?.map(tm => this.getThreatModelDisplayName(tm)).join('; ') || '';
+      const keyFindings = paper.sok?.keyFindings?.replace(/"/g, '""') || '';
+      
+      return [
+        `"${paper.title?.replace(/"/g, '""') || ''}"`,
+        `"${paper.authors?.replace(/"/g, '""') || ''}"`,
+        `"${paper.venue?.replace(/"/g, '""') || ''}"`,
+        paper.year || '',
+        paper.link || '',
+        paper.readingStatus || '',
+        `"${tags}"`,
+        `"${threatModels}"`,
+        `"${keyFindings}"`
+      ].join(',');
+    });
+
+    const csv = [headers.join(','), ...rows].join('\n');
+    this.downloadFile(csv, 'papers.csv', 'text/csv');
+    this.toastr.success(`Exported ${this.filteredPapers.length} papers to CSV`);
+  }
+
+  exportToJSON() {
+    if (this.filteredPapers.length === 0) {
+      this.toastr.warning('No papers to export');
+      return;
+    }
+
+    const exportData = {
+      exportDate: new Date().toISOString(),
+      totalPapers: this.filteredPapers.length,
+      papers: this.filteredPapers.map(paper => ({
+        title: paper.title,
+        authors: paper.authors,
+        venue: paper.venue,
+        year: paper.year,
+        link: paper.link,
+        readingStatus: paper.readingStatus,
+        tags: paper.tags?.map(t => {
+          const tag = this.tags.find(tag => tag.name === t);
+          return { name: tag?.name || t, displayName: tag?.displayName || t };
+        }) || [],
+        threatModels: paper.sok?.threatModel?.map(tm => {
+          const threatModel = this.threatModels.find(tmObj => tmObj.name === tm);
+          return { name: threatModel?.name || tm, displayName: threatModel?.displayName || tm };
+        }) || [],
+        sok: paper.sok,
+        createdAt: paper.createdAt,
+        createdBy: paper.createdBy
+      }))
+    };
+
+    const json = JSON.stringify(exportData, null, 2);
+    this.downloadFile(json, 'papers.json', 'application/json');
+    this.toastr.success(`Exported ${this.filteredPapers.length} papers to JSON`);
+  }
+
+  private downloadFile(content: string, filename: string, mimeType: string) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   }
 }
 

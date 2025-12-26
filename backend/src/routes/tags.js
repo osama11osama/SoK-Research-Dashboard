@@ -108,11 +108,12 @@ router.delete('/:id', authenticate, requireSuperAdmin, async (req, res) => {
       return res.status(404).json({ message: 'Tag not found' });
     }
 
-    // Check if tag is used in any papers
-    const papersWithTag = await Paper.countDocuments({ tags: tag.displayName });
-    if (papersWithTag > 0) {
+    // Check if tag is used in any papers (using tag.name, not displayName)
+    const papersWithTag = await Paper.find({ tags: tag.name }).select('title _id').lean();
+    if (papersWithTag.length > 0) {
       return res.status(400).json({ 
-        message: `Cannot delete tag. It is used in ${papersWithTag} paper(s). Please remove it from all papers first.` 
+        message: `Cannot delete tag. It is used in ${papersWithTag.length} paper(s). Please remove it from all papers first.`,
+        papersUsingTag: papersWithTag.map(p => ({ _id: p._id, title: p.title }))
       });
     }
 

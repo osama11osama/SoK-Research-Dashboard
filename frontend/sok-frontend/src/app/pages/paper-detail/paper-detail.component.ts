@@ -35,6 +35,59 @@ export class PaperDetailComponent implements OnInit {
   settings$ = this.settingsService.settings$;
   newNoteVisibility: 'PRIVATE' | 'PUBLIC' = 'PUBLIC';
   loading = false;
+  showNoteTemplates = false;
+  
+  // Note templates
+  noteTemplates = {
+    summary: `## Summary
+
+**Main Contribution:**
+- 
+
+**Key Points:**
+- 
+- 
+- 
+
+**Methodology:**
+- 
+
+**Results:**
+- `,
+    keyFindings: `## Key Findings
+
+**Finding 1:**
+- Description: 
+- Significance: 
+
+**Finding 2:**
+- Description: 
+- Significance: 
+
+**Finding 3:**
+- Description: 
+- Significance: `,
+    critique: `## Critique
+
+**Strengths:**
+- 
+- 
+
+**Weaknesses:**
+- 
+- 
+
+**Limitations:**
+- 
+- 
+
+**Future Work:**
+- 
+- 
+
+**Personal Notes:**
+- `
+  };
   router = inject(Router);
   showEditModal = false;
   editPaper: Partial<Paper> & { 
@@ -181,6 +234,11 @@ export class PaperDetailComponent implements OnInit {
         }
       });
     }
+  }
+
+  applyTemplate(templateType: 'summary' | 'keyFindings' | 'critique') {
+    this.newNoteContent = this.noteTemplates[templateType];
+    this.toastr.info('Template applied');
   }
 
   isSuperAdmin(): boolean {

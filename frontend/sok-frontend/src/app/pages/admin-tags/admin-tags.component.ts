@@ -30,6 +30,9 @@ export class AdminTagsComponent implements OnInit {
   selectedTagIds: Set<string> = new Set();
   showDeleteConfirmModal = false;
   isDeleting = false;
+  showPapersUsingTagModal = false;
+  papersUsingTag: Array<{ _id: string; title: string }> = [];
+  tagToDelete: Tag | null = null;
 
   // Form fields
   tagName = '';
@@ -137,10 +140,7 @@ export class AdminTagsComponent implements OnInit {
   }
 
   deleteTag(tag: Tag) {
-    if (!confirm(`Are you sure you want to delete the tag "${tag.displayName}"?`)) {
-      return;
-    }
-
+    // Try to delete - backend will return papers using this tag if any
     this.tagService.deleteTag(tag._id).subscribe({
       next: () => {
         this.loadTags();
@@ -148,9 +148,22 @@ export class AdminTagsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to delete tag:', err);
-        this.toastr.error(err.error?.message || 'Failed to delete tag');
+        if (err.status === 400 && err.error?.papersUsingTag && err.error.papersUsingTag.length > 0) {
+          // Show modal with papers using this tag
+          this.tagToDelete = tag;
+          this.papersUsingTag = err.error.papersUsingTag;
+          this.showPapersUsingTagModal = true;
+        } else {
+          this.toastr.error(err.error?.message || 'Failed to delete tag');
+        }
       }
     });
+  }
+
+  closePapersUsingTagModal() {
+    this.showPapersUsingTagModal = false;
+    this.papersUsingTag = [];
+    this.tagToDelete = null;
   }
 
   isSuperAdmin(): boolean {

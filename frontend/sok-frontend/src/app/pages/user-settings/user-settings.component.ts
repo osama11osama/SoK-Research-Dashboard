@@ -97,8 +97,8 @@ export class UserSettingsComponent implements OnInit {
   }
 
   updatePassword() {
-    if (!this.newPassword || this.newPassword.length < 6) {
-      this.toastr.error('Password must be at least 6 characters');
+    if (!this.newPassword || this.newPassword.length < 8) {
+      this.toastr.error('Password must be at least 8 characters');
       return;
     }
 
@@ -142,8 +142,8 @@ export class UserSettingsComponent implements OnInit {
   }
 
   updateUserPassword() {
-    if (!this.selectedUserId || !this.selectedUserPassword || this.selectedUserPassword.length < 6) {
-      this.toastr.error('Password must be at least 6 characters');
+    if (!this.selectedUserId || !this.selectedUserPassword || this.selectedUserPassword.length < 8) {
+      this.toastr.error('Password must be at least 8 characters');
       return;
     }
 

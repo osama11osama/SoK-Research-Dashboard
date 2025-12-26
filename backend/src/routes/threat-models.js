@@ -108,13 +108,14 @@ router.delete('/:id', authenticate, requireSuperAdmin, async (req, res) => {
       return res.status(404).json({ message: 'Threat model not found' });
     }
 
-    // Check if threat model is used in any papers
-    const papersWithThreatModel = await Paper.countDocuments({ 
-      'sok.threatModel': threatModel.displayName 
-    });
-    if (papersWithThreatModel > 0) {
+    // Check if threat model is used in any papers (using threatModel.name, not displayName)
+    const papersWithThreatModel = await Paper.find({ 
+      'sok.threatModel': threatModel.name 
+    }).select('title _id').lean();
+    if (papersWithThreatModel.length > 0) {
       return res.status(400).json({ 
-        message: `Cannot delete threat model. It is used in ${papersWithThreatModel} paper(s). Please remove it from all papers first.` 
+        message: `Cannot delete threat model. It is used in ${papersWithThreatModel.length} paper(s). Please remove it from all papers first.`,
+        papersUsingThreatModel: papersWithThreatModel.map(p => ({ _id: p._id, title: p.title }))
       });
     }
 

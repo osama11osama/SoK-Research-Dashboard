@@ -192,8 +192,8 @@ router.patch('/profile', authenticate, [
     .withMessage('Username must be 3-30 characters, lowercase letters, numbers, and underscores only'),
   body('password')
     .optional({ checkFalsy: true })
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);

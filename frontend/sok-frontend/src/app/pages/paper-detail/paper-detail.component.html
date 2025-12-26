@@ -140,12 +140,61 @@
 
       <!-- Add Note Form -->
       <div *ngIf="canAddNotes()" class="mb-8 p-6 bg-slate-50 rounded-xl">
-        <h3 class="text-lg font-semibold text-slate-800 mb-4">Add Note</h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-slate-800">Add Note</h3>
+          <div class="relative">
+            <button
+              (click)="showNoteTemplates = !showNoteTemplates"
+              class="px-3 py-1.5 text-sm bg-white hover:bg-slate-100 text-slate-700 rounded-lg flex items-center gap-2 transition-colors border border-slate-200"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Templates
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div 
+              *ngIf="showNoteTemplates"
+              class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-slate-200 z-50"
+              (click)="$event.stopPropagation()"
+            >
+              <button 
+                (click)="applyTemplate('summary'); showNoteTemplates = false"
+                class="w-full text-left px-4 py-3 hover:bg-slate-50 flex items-center gap-3 border-b border-slate-100"
+              >
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span class="text-sm font-medium">Summary Template</span>
+              </button>
+              <button 
+                (click)="applyTemplate('keyFindings'); showNoteTemplates = false"
+                class="w-full text-left px-4 py-3 hover:bg-slate-50 flex items-center gap-3 border-b border-slate-100"
+              >
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                </svg>
+                <span class="text-sm font-medium">Key Findings Template</span>
+              </button>
+              <button 
+                (click)="applyTemplate('critique'); showNoteTemplates = false"
+                class="w-full text-left px-4 py-3 hover:bg-slate-50 flex items-center gap-3"
+              >
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                </svg>
+                <span class="text-sm font-medium">Critique Template</span>
+              </button>
+            </div>
+          </div>
+        </div>
         <textarea
           [(ngModel)]="newNoteContent"
-          rows="4"
-          placeholder="Write your note here..."
-          class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none mb-4"
+          rows="6"
+          placeholder="Write your note here... Or use a template above to get started quickly."
+          class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none mb-4 font-mono text-sm"
         ></textarea>
         
         <div class="flex items-center gap-4 mb-4">

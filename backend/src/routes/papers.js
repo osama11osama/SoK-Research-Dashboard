@@ -106,6 +106,7 @@ router.get('/:id', authenticate, async (req, res) => {
 
     // Apply creator visibility rules
     if (req.user.role !== 'SUPER_ADMIN' && 
+        paper.createdByUserId && 
         paper.createdByUserId.toString() !== req.user._id.toString()) {
       paper.createdByUserId = null;
     }
