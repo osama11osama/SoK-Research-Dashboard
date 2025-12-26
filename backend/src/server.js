@@ -53,8 +53,24 @@ app.use((req, res) => {
 
 // Connect to MongoDB and start server
 mongoose.connect(MONGODB_URI)
-  .then(() => {
+  .then(async () => {
     console.log('Connected to MongoDB');
+    
+    // Check if we should seed initial papers (only if database is empty)
+    if (process.env.AUTO_SEED_PAPERS === 'true') {
+      const Paper = require('./models/Paper');
+      const paperCount = await Paper.countDocuments();
+      if (paperCount === 0) {
+        console.log('Database is empty. Auto-seeding initial papers...');
+        try {
+          const { seedPapers } = require('./scripts/seed-papers');
+          await seedPapers();
+        } catch (err) {
+          console.error('Error auto-seeding papers:', err);
+        }
+      }
+    }
+    
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });

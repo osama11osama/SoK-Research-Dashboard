@@ -100,7 +100,7 @@
             </div>
             <h4 class="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition-colors flex items-center gap-2">
               <a [routerLink]="['/app/papers', paper._id]" class="hover:underline">{{ paper.title }}</a>
-              <a *ngIf="paper.link" [href]="paper.link" target="_blank" rel="noopener noreferrer">
+              <a *ngIf="paper.link" (click)="openLink($event, paper.link)" class="cursor-pointer">
                 <svg class="w-4 h-4 text-slate-300 hover:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                 </svg>
@@ -167,11 +167,25 @@
           class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
           [(ngModel)]="newPaper.year"
         />
-        <input 
-          placeholder="Link to PDF" 
-          class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
-          [(ngModel)]="newPaper.link"
-        />
+        <div class="relative">
+          <input 
+            type="url"
+            placeholder="Enter PDF URL or leave empty" 
+            class="w-full px-4 py-2 pr-10 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            [(ngModel)]="newPaper.link"
+          />
+          <button
+            *ngIf="newPaper.link"
+            type="button"
+            (click)="clearLink()"
+            class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-red-600 transition-colors"
+            title="Clear link"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
         <input 
           placeholder="Tags (comma separated)" 
           class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"

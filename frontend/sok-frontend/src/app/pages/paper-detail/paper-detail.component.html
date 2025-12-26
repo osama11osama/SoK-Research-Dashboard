@@ -16,12 +16,24 @@
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-8">
       <div class="flex items-start justify-between mb-6">
         <div class="flex-1">
-          <div class="flex items-center gap-3 mb-4">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
             <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-700">
               {{ paper.readingStatus === 'TO_READ' ? 'To Read' : paper.readingStatus === 'IN_PROGRESS' ? 'In Progress' : 'Read' }}
             </span>
             <span class="text-slate-500 text-sm">{{ paper.venue }}</span>
             <span *ngIf="paper.year" class="text-slate-500 text-sm">{{ paper.year }}</span>
+            </div>
+            <button
+              *ngIf="isSuperAdmin()"
+              (click)="openEditModal()"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              Edit Paper
+            </button>
           </div>
           
           <h1 class="text-3xl font-bold text-slate-800 mb-4">{{ paper.title }}</h1>
@@ -33,8 +45,8 @@
             </span>
           </div>
 
-          <a *ngIf="paper.link" [href]="paper.link" target="_blank" rel="noopener noreferrer" 
-             class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+          <a *ngIf="paper.link" (click)="openLink($event, paper.link)" 
+             class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
             </svg>
@@ -142,6 +154,198 @@
         <div *ngIf="notes.length === 0" class="text-center py-12 text-slate-500">
           No notes yet. Be the first to add one!
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Paper Modal -->
+  <div *ngIf="showEditModal && paper" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+        <h3 class="text-xl font-bold">Edit Paper</h3>
+        <button (click)="closeEditModal()" class="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-2">Title *</label>
+          <input
+            type="text"
+            [(ngModel)]="editPaper.title"
+            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            required
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-2">Authors *</label>
+          <input
+            type="text"
+            [(ngModel)]="editPaper.authors"
+            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            required
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Venue</label>
+            <input
+              type="text"
+              [(ngModel)]="editPaper.venue"
+              class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Year</label>
+            <input
+              type="number"
+              [(ngModel)]="editPaper.year"
+              class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-2">Link to PDF</label>
+          <div class="relative">
+            <input
+              type="url"
+              [(ngModel)]="editPaper.link"
+              class="w-full px-4 py-2 pr-10 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+              placeholder="Enter PDF URL or leave empty"
+            />
+            <button
+              *ngIf="editPaper.link"
+              type="button"
+              (click)="clearLink()"
+              class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-red-600 transition-colors"
+              title="Clear link"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-2">Reading Status</label>
+          <select
+            [(ngModel)]="editPaper.readingStatus"
+            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+          >
+            <option value="TO_READ">To Read</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="READ">Read</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-2">Tags (comma separated)</label>
+          <input
+            type="text"
+            [(ngModel)]="tagsInputEdit"
+            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            placeholder="e.g. Security, Privacy, Browser"
+          />
+        </div>
+
+        <!-- SoK Metadata Section -->
+        <div class="pt-4 border-t border-slate-200">
+          <h4 class="text-lg font-semibold text-slate-800 mb-4">SoK Metadata (Optional)</h4>
+          
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Category</label>
+              <input
+                type="text"
+                [(ngModel)]="editPaper.sok.category"
+                class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Method</label>
+              <input
+                type="text"
+                [(ngModel)]="editPaper.sok.method"
+                class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Dataset</label>
+            <input
+              type="text"
+              [(ngModel)]="editPaper.sok.dataset"
+              class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Threat Model (comma separated)</label>
+            <input
+              type="text"
+              [(ngModel)]="threatModelInput"
+              (input)="updateThreatModel($any($event.target).value)"
+              class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Key Findings</label>
+            <textarea
+              [(ngModel)]="editPaper.sok.keyFindings"
+              rows="3"
+              class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            ></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Limitations</label>
+            <textarea
+              [(ngModel)]="editPaper.sok.limitations"
+              rows="3"
+              class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            ></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Reproducibility - Code</label>
+              <input
+                type="text"
+                [value]="editPaper.sok.reproducibility.code || ''"
+                (input)="updateReproducibilityCode($any($event.target).value)"
+                class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Reproducibility - Data</label>
+              <input
+                type="text"
+                [value]="editPaper.sok.reproducibility.data || ''"
+                (input)="updateReproducibilityData($any($event.target).value)"
+                class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-6 bg-slate-50 flex gap-3">
+        <button
+          (click)="closeEditModal()"
+          class="flex-1 px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="updatePaper()"
+          [disabled]="editing || !editPaper.title || !editPaper.authors"
+          class="flex-1 px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {{ editing ? 'Saving...' : 'Save Changes' }}
+        </button>
       </div>
     </div>
   </div>

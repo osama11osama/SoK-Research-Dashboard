@@ -161,10 +161,37 @@ const User = require('./src/models/User');
         Write-Host "⚠ No super admin account found!" -ForegroundColor Yellow
         Write-Host "You can create one by:" -ForegroundColor White
         Write-Host "  1. Registering at $FrontendUrl/register (first user = SUPER_ADMIN)" -ForegroundColor Gray
-        Write-Host "  2. Running: cd backend && node src/scripts/bootstrap-admin.js" -ForegroundColor Gray
+        Write-Host "  2. Running: cd backend && npm run bootstrap-admin" -ForegroundColor Gray
+        Write-Host ""
+        Write-Host "After creating admin, seed initial papers:" -ForegroundColor White
+        Write-Host "  cd backend && npm run seed-papers" -ForegroundColor Gray
         Write-Host ""
     } else {
         Write-Host "✓ Super admin account exists" -ForegroundColor Green
+        # Check if papers exist
+        $paperCheckScript = @"
+require('dotenv').config();
+const mongoose = require('mongoose');
+const Paper = require('./src/models/Paper');
+(async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sok_research', { serverSelectionTimeoutMS: 3000 });
+        const count = await Paper.countDocuments();
+        console.log(count);
+        await mongoose.disconnect();
+        process.exit(0);
+    } catch(e) {
+        console.log('0');
+        process.exit(0);
+    }
+})();
+"@
+        $paperCheck = node -e $paperCheckScript 2>$null
+        if ([int]$paperCheck -eq 0) {
+            Write-Host "💡 Tip: Run 'cd backend && npm run seed-papers' to add 22 initial papers" -ForegroundColor Cyan
+        } else {
+            Write-Host "✓ Database contains $paperCheck paper(s)" -ForegroundColor Green
+        }
     }
 } catch {
     Write-Host "⚠ Could not check for super admin (MongoDB may still be initializing)" -ForegroundColor Yellow

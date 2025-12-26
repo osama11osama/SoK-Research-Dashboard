@@ -46,6 +46,23 @@ This script will:
 
 The MongoDB container uses a recognizable name: **`sok-research-mongodb-local`** (different from docker-compose containers).
 
+### Seed Initial Papers
+
+After setting up, you can seed the database with 22 foundational papers:
+
+```bash
+cd backend
+npm run seed-papers
+```
+
+Or use the complete setup script (creates admin + seeds papers):
+```bash
+cd backend
+npm run setup
+```
+
+See [SEED_DATA.md](SEED_DATA.md) for details about the initial papers.
+
 ### Stop Services
 
 ```powershell

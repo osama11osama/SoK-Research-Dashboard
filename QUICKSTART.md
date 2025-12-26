@@ -53,14 +53,30 @@ npm start
 # Frontend runs on http://localhost:4200
 ```
 
-### Create Admin User
+### Create Admin User & Seed Papers
 
-First user to register automatically becomes SUPER_ADMIN, or use bootstrap script:
+**Option 1: Register first user (becomes SUPER_ADMIN)**
+- Register at `/register` - first user automatically becomes SUPER_ADMIN
 
+**Option 2: Use bootstrap script**
 ```bash
 cd backend
-node src/scripts/bootstrap-admin.js
+npm run bootstrap-admin
 ```
+
+**Option 3: Complete setup (admin + seed papers)**
+```bash
+cd backend
+npm run setup
+```
+
+**Seed Initial Papers (22 papers)**
+```bash
+cd backend
+npm run seed-papers
+```
+
+The seed script adds 22 foundational papers on browser extension security, properly categorized with tags and SoK metadata. See [SEED_DATA.md](SEED_DATA.md) for details.
 
 ## First Steps
 

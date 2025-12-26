@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { AdminService, AdminUser } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -15,6 +16,7 @@ import { AuthService } from '../../services/auth.service';
 export class AdminUsersComponent implements OnInit {
   private adminService = inject(AdminService);
   private authService = inject(AuthService);
+  private toastr = inject(ToastrService);
 
   pendingUsers: AdminUser[] = [];
   allUsers: AdminUser[] = [];
@@ -71,10 +73,11 @@ export class AdminUsersComponent implements OnInit {
         this.loadAllUsers();
         this.closeApprovalModal();
         this.loading = false;
+        this.toastr.success(`User ${this.selectedUser?.displayName} approved successfully`);
       },
       error: (err) => {
         console.error('Failed to approve user:', err);
-        alert(err.error?.message || 'Failed to approve user');
+        this.toastr.error(err.error?.message || 'Failed to approve user');
         this.loading = false;
       }
     });
@@ -89,10 +92,11 @@ export class AdminUsersComponent implements OnInit {
       next: () => {
         this.loadPendingUsers();
         this.loadAllUsers();
+        this.toastr.success(`User ${user.displayName} rejected`);
       },
       error: (err) => {
         console.error('Failed to reject user:', err);
-        alert(err.error?.message || 'Failed to reject user');
+        this.toastr.error(err.error?.message || 'Failed to reject user');
       }
     });
   }
@@ -105,10 +109,11 @@ export class AdminUsersComponent implements OnInit {
     this.adminService.disableUser(user._id).subscribe({
       next: () => {
         this.loadAllUsers();
+        this.toastr.success(`User ${user.displayName} disabled`);
       },
       error: (err) => {
         console.error('Failed to disable user:', err);
-        alert(err.error?.message || 'Failed to disable user');
+        this.toastr.error(err.error?.message || 'Failed to disable user');
       }
     });
   }
