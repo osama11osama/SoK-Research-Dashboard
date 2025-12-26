@@ -1,19 +1,71 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const Paper = require('../models/Paper');
+const Favorite = require('../models/Favorite');
+const User = require('../models/User');
+const Settings = require('../models/Settings');
 const { authenticate } = require('../middleware/auth');
 const { requireSuperAdmin, logAudit } = require('../middleware/rbac');
 
 const router = express.Router();
 
-// Get all papers (with visibility rules for creator)
+// Get all papers (with visibility rules for creator and filtering)
 router.get('/', authenticate, async (req, res) => {
   try {
-    const papers = await Paper.find().sort({ createdAt: -1 }).lean();
+    const { tag, threatModel, venue, year } = req.query;
+    
+    // Build query for filtering
+    const query = {};
+    if (tag) {
+      query.tags = { $in: [tag] };
+    }
+    if (threatModel) {
+      query['sok.threatModel'] = { $in: [threatModel] };
+    }
+    if (venue) {
+      query.venue = venue;
+    }
+    if (year) {
+      query.year = parseInt(year);
+    }
+    
+    const papers = await Paper.find(query).sort({ createdAt: -1 }).lean();
 
-    // Apply creator visibility rules
+    // Get user's favorite paper IDs
+    const favorites = await Favorite.find({ userId: req.user._id }).select('paperId').lean();
+    const favoriteIds = new Set(favorites.map(fav => fav.paperId.toString()));
+
+    // Get setting for showing paper creator
+    const showPaperCreatorSetting = await Settings.findOne({ key: 'showPaperCreator' });
+    const showPaperCreator = showPaperCreatorSetting?.value === true || showPaperCreatorSetting?.value === 'true';
+
+    // Get all unique creator user IDs (only if showPaperCreator is enabled)
+    let creatorMap = new Map();
+    if (showPaperCreator) {
+      const creatorIds = [...new Set(papers.map(p => p.createdByUserId?.toString()).filter(Boolean))];
+      if (creatorIds.length > 0) {
+        const creators = await User.find({ _id: { $in: creatorIds } }).select('_id username displayName').lean();
+        creatorMap = new Map(creators.map(c => [c._id.toString(), { username: c.username, displayName: c.displayName }]));
+      }
+    }
+
+    // Apply creator visibility rules and add favorite status
     const papersWithVisibility = papers.map(paper => {
       const paperObj = paper;
+      
+      // Add favorite status
+      paperObj.isFavorite = favoriteIds.has(paper._id.toString());
+      
+      // Add creator information if setting allows
+      if (showPaperCreator && paper.createdByUserId) {
+        const creator = creatorMap.get(paper.createdByUserId.toString());
+        if (creator) {
+          paperObj.createdBy = {
+            username: creator.username,
+            displayName: creator.displayName
+          };
+        }
+      }
       
       // SUPER_ADMIN sees all creators
       if (req.user.role === 'SUPER_ADMIN') {
@@ -21,12 +73,15 @@ router.get('/', authenticate, async (req, res) => {
       }
       
       // Creator sees their own identity
-      if (paper.createdByUserId.toString() === req.user._id.toString()) {
+      if (paper.createdByUserId && paper.createdByUserId.toString() === req.user._id.toString()) {
         return paperObj;
       }
       
-      // Others see anonymous
-      paperObj.createdByUserId = null;
+      // Others see anonymous (unless setting allows)
+      if (!showPaperCreator) {
+        paperObj.createdByUserId = null;
+        paperObj.createdBy = null;
+      }
       return paperObj;
     });
 
@@ -44,6 +99,10 @@ router.get('/:id', authenticate, async (req, res) => {
     if (!paper) {
       return res.status(404).json({ message: 'Paper not found' });
     }
+
+    // Check if paper is favorited by user
+    const favorite = await Favorite.findOne({ userId: req.user._id, paperId: paper._id });
+    paper.isFavorite = !!favorite;
 
     // Apply creator visibility rules
     if (req.user.role !== 'SUPER_ADMIN' && 
@@ -71,6 +130,19 @@ router.post('/', authenticate, [
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
+    }
+
+    // Check for duplicate paper (same title)
+    const normalizedTitle = req.body.title.trim();
+    const existingPaper = await Paper.findOne({ 
+      title: normalizedTitle 
+    });
+    
+    if (existingPaper) {
+      return res.status(409).json({ 
+        message: `A paper with the title "${normalizedTitle}" already exists`,
+        duplicate: true 
+      });
     }
 
     // Handle empty link field - convert empty string to undefined (MongoDB accepts both)

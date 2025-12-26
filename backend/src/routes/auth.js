@@ -182,6 +182,73 @@ router.get('/me', authenticate, async (req, res) => {
   });
 });
 
+// Update own profile (username and/or password)
+router.patch('/profile', authenticate, [
+  body('username')
+    .optional({ checkFalsy: true })
+    .trim()
+    .isLength({ min: 3, max: 30 })
+    .matches(/^[a-z0-9_]+$/)
+    .withMessage('Username must be 3-30 characters, lowercase letters, numbers, and underscores only'),
+  body('password')
+    .optional({ checkFalsy: true })
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { username, password } = req.body;
+    const user = await User.findById(req.user._id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if at least one field is being updated
+    if (!username && !password) {
+      return res.status(400).json({ message: 'At least one field (username or password) must be provided' });
+    }
+
+    // Update username if provided
+    if (username) {
+      const normalizedUsername = username.toLowerCase();
+      // Check if username is already taken by another user
+      const existingUser = await User.findOne({ 
+        username: normalizedUsername,
+        _id: { $ne: req.user._id }
+      });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Username already taken' });
+      }
+      user.username = normalizedUsername;
+    }
+
+    // Update password if provided
+    if (password) {
+      user.passwordHash = await User.hashPassword(password);
+    }
+
+    await user.save();
+
+    res.json({
+      message: 'Profile updated successfully',
+      user: {
+        id: user._id,
+        username: user.username,
+        displayName: user.displayName,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    console.error('Update profile error:', err);
+    res.status(500).json({ message: 'Failed to update profile' });
+  }
+});
+
 // Logout
 router.post('/logout', (req, res) => {
   res.clearCookie('refreshToken');

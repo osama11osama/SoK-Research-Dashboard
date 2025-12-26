@@ -10,6 +10,9 @@ const papersRoutes = require('./routes/papers');
 const notesRoutes = require('./routes/notes');
 const adminRoutes = require('./routes/admin');
 const statsRoutes = require('./routes/stats');
+const tagsRoutes = require('./routes/tags');
+const threatModelsRoutes = require('./routes/threat-models');
+const favoritesRoutes = require('./routes/favorites');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,6 +39,9 @@ app.use('/api/papers/:paperId/notes', notesRoutes);
 app.use('/api/papers', papersRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/tags', tagsRoutes);
+app.use('/api/threat-models', threatModelsRoutes);
+app.use('/api/favorites', favoritesRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Index for efficient queries
-userSchema.index({ username: 1 });
+// Note: username already has an index from unique: true
 userSchema.index({ status: 1 });
 userSchema.index({ role: 1 });
 
