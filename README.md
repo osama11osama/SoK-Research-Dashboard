@@ -114,13 +114,29 @@ Account states: PENDING, APPROVED, REJECTED, DISABLED
 
 ## Production Deployment
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed production deployment instructions.
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for complete deployment instructions on SaarMove infrastructure.
 
-For quick Docker deployment:
-
-```bash
-docker-compose up -d --build
-```
+The deployment guide includes:
+- [DNS configuration](DEPLOYMENT.md#step-1-dns-configuration-at-namecom)
+- [Clone project repository](DEPLOYMENT.md#step-2-clone-project-repository)
+- [Create Docker network](DEPLOYMENT.md#step-3-create-docker-network)
+- [Create project directory and files](DEPLOYMENT.md#step-4-create-project-directory-and-files)
+  - [docker-compose.prod.yml](DEPLOYMENT.md#41-create-docker-composeprodyml)
+  - [.env file](DEPLOYMENT.md#42-create-env-file)
+- [Create Nginx configuration](DEPLOYMENT.md#step-5-create-nginx-configuration)
+- [Update main docker-compose.yml](DEPLOYMENT.md#step-6-update-main-docker-composeyml)
+- [Test Nginx configuration](DEPLOYMENT.md#step-7-test-nginx-configuration)
+- [Obtain SSL certificate](DEPLOYMENT.md#step-8-obtain-ssl-certificate)
+- [Reload Nginx](DEPLOYMENT.md#step-9-reload-nginx)
+- [Build and start services](DEPLOYMENT.md#step-10-build-and-start-services)
+- [Connect Nginx to network](DEPLOYMENT.md#step-11-connect-nginx-to-network)
+- [Verify deployment](DEPLOYMENT.md#step-12-verify-deployment)
+- [Create super admin](DEPLOYMENT.md#step-13-create-super-admin)
+- [Seed initial papers](DEPLOYMENT.md#step-14-seed-initial-papers-optional)
+- [Verification checklist](DEPLOYMENT.md#verification-checklist)
+- [Troubleshooting guide](DEPLOYMENT.md#troubleshooting)
+- [Updating the application](DEPLOYMENT.md#updating-the-application)
+- [File locations summary](DEPLOYMENT.md#file-locations-summary)
 
 ## API Endpoints
 
