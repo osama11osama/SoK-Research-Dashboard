@@ -20,6 +20,10 @@ A web-based research dashboard designed to support a Systematization of Knowledg
 - **Reverse Proxy**: Nginx
 - **Containerization**: Docker & Docker Compose
 
+## User Guide
+
+See **[USER_GUIDE.md](USER_GUIDE.md)** for a quick guide on how to use the dashboard.
+
 ## Quick Start (Local Development)
 
 ### Prerequisites
@@ -125,11 +129,11 @@ The deployment guide includes:
   - [.env file](DEPLOYMENT.md#42-create-env-file)
 - [Create Nginx configuration](DEPLOYMENT.md#step-5-create-nginx-configuration)
 - [Update main docker-compose.yml](DEPLOYMENT.md#step-6-update-main-docker-composeyml)
-- [Test Nginx configuration](DEPLOYMENT.md#step-7-test-nginx-configuration)
-- [Obtain SSL certificate](DEPLOYMENT.md#step-8-obtain-ssl-certificate)
-- [Reload Nginx](DEPLOYMENT.md#step-9-reload-nginx)
-- [Build and start services](DEPLOYMENT.md#step-10-build-and-start-services)
-- [Connect Nginx to network](DEPLOYMENT.md#step-11-connect-nginx-to-network)
+- [Build and start services](DEPLOYMENT.md#step-7-build-and-start-services-before-testing-nginx)
+- [Connect Nginx to network](DEPLOYMENT.md#step-8-connect-nginx-to-network)
+- [Test Nginx configuration](DEPLOYMENT.md#step-9-test-nginx-configuration)
+- [Obtain SSL certificate](DEPLOYMENT.md#step-10-obtain-ssl-certificate)
+- [Reload Nginx](DEPLOYMENT.md#step-11-reload-nginx)
 - [Verify deployment](DEPLOYMENT.md#step-12-verify-deployment)
 - [Create super admin](DEPLOYMENT.md#step-13-create-super-admin)
 - [Seed initial papers](DEPLOYMENT.md#step-14-seed-initial-papers-optional)

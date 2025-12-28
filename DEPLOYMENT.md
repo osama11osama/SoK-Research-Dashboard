@@ -18,8 +18,11 @@ This deployment follows the existing SaarMove infrastructure pattern:
 4. Create `docker-compose.prod.yml` in `projects/sok-research/`
 5. Create Nginx configuration in `nginx/conf.d/40-sok.conf`
 6. Update main `docker-compose.yml` to include the network
-7. Obtain SSL certificate
-8. Deploy and connect services
+7. Build and start services (containers must exist before nginx can resolve them)
+8. Connect nginx to network
+9. Test nginx configuration
+10. Obtain SSL certificate
+11. Deploy and verify
 
 ---
 
@@ -209,7 +212,7 @@ cd ~/saarmove-infrastructure/nginx/conf.d
 nano 40-sok.conf
 ```
 
-Create the Nginx configuration:
+Create the Nginx configuration. **Initially, we'll create it without HTTPS** (commented out) so nginx can start and serve the ACME challenge:
 
 ```nginx
 # SoK Research Dashboard Configuration
@@ -221,35 +224,47 @@ server {
         root /var/www/certbot;
     }
 
-    return 301 https://$host$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    http2 on;
-    server_name sok.saarmove.com;
-
-    # SSL certificates (update path if certbot added suffix like -0001)
-    ssl_certificate /etc/letsencrypt/live/sok.saarmove.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/sok.saarmove.com/privkey.pem;
+    # Temporarily comment out HTTPS redirect until we get the certificate
+    # return 301 https://$host$request_uri;
     
-    include /etc/nginx/snippets/ssl-common.conf;
-    include /etc/nginx/snippets/security-headers.conf;
-
-    # Frontend
+    # Temporary: serve HTTP until SSL certificate is obtained
     location / {
         limit_req zone=general_limit burst=50 nodelay;
         proxy_pass http://sok-research-frontend:80;
         include /etc/nginx/snippets/proxy-headers.conf;
     }
 
-    # Backend API
     location /api/ {
         limit_req zone=api_limit burst=20 nodelay;
         proxy_pass http://sok-research-backend:3000/api/;
         include /etc/nginx/snippets/proxy-headers.conf;
     }
 }
+
+# HTTPS server block - uncomment after obtaining SSL certificate
+# server {
+#     listen 443 ssl;
+#     http2 on;
+#     server_name sok.saarmove.com;
+#
+#     ssl_certificate /etc/letsencrypt/live/sok.saarmove.com/fullchain.pem;
+#     ssl_certificate_key /etc/letsencrypt/live/sok.saarmove.com/privkey.pem;
+#     
+#     include /etc/nginx/snippets/ssl-common.conf;
+#     include /etc/nginx/snippets/security-headers.conf;
+#
+#     location / {
+#         limit_req zone=general_limit burst=50 nodelay;
+#         proxy_pass http://sok-research-frontend:80;
+#         include /etc/nginx/snippets/proxy-headers.conf;
+#     }
+#
+#     location /api/ {
+#         limit_req zone=api_limit burst=20 nodelay;
+#         proxy_pass http://sok-research-backend:3000/api/;
+#         include /etc/nginx/snippets/proxy-headers.conf;
+#     }
+# }
 ```
 
 **Note**: File naming follows the pattern `40-sok.conf` (40 for new projects, ascending from 10, 20, 30).
@@ -286,56 +301,9 @@ networks:
 
 ---
 
-## Step 7: Test Nginx Configuration
+## Step 7: Build and Start Services (Before Testing Nginx)
 
-```bash
-cd ~/saarmove-infrastructure
-docker compose exec nginx nginx -t
-```
-
-If there are errors, fix them before proceeding.
-
----
-
-## Step 8: Obtain SSL Certificate
-
-```bash
-# Make sure nginx is running
-cd ~/saarmove-infrastructure
-docker compose up -d nginx
-
-# Request SSL certificate using webroot method
-sudo certbot certonly --webroot \
-  -w /var/www/certbot \
-  -d sok.saarmove.com \
-  --email your-email@example.com \
-  --agree-tos \
-  --no-eff-email
-```
-
-**⚠️ IMPORTANT**: If certbot adds a suffix (e.g., `-0001`), update the nginx config:
-
-```bash
-# Check certificate path
-ls -la /etc/letsencrypt/live/ | grep sok
-
-# If it's sok.saarmove.com-0001, update 40-sok.conf:
-nano ~/saarmove-infrastructure/nginx/conf.d/40-sok.conf
-# Change: sok.saarmove.com to sok.saarmove.com-0001 in ssl_certificate paths
-```
-
----
-
-## Step 9: Reload Nginx
-
-```bash
-cd ~/saarmove-infrastructure
-docker compose exec nginx nginx -s reload
-```
-
----
-
-## Step 10: Build and Start Services
+**Important**: You must build and start the services first, so the containers exist on the network before nginx tries to connect to them.
 
 ```bash
 cd ~/saarmove-infrastructure/projects/sok-research
@@ -344,13 +312,123 @@ docker compose -f docker-compose.prod.yml up -d --build
 
 ---
 
-## Step 11: Connect Nginx to Network
+## Step 8: Connect Nginx to Network
 
 ```bash
 docker network connect sok-research-network saarmove-nginx-prod
 
 # Verify connection
 docker network inspect sok-research-network | grep nginx
+```
+
+---
+
+## Step 9: Test Nginx Configuration (Initial - HTTP Only)
+
+Now test the nginx configuration (it should work since we're using HTTP only initially):
+
+```bash
+cd ~/saarmove-infrastructure
+docker compose exec nginx nginx -t
+```
+
+If there are errors, fix them before proceeding.
+
+**Note**: The config test will show warnings about SSL stapling for other domains - these are normal and can be ignored.
+
+---
+
+## Step 10: Obtain SSL Certificate
+
+```bash
+# Make sure nginx is running
+cd ~/saarmove-infrastructure
+docker compose up -d nginx
+
+# Create certbot webroot directory (must match the mount path in docker-compose.yml)
+mkdir -p ~/saarmove-infrastructure/certbot/www
+
+# Request SSL certificate using webroot method
+# Note: Use the host path that's mounted to /var/www/certbot in nginx container
+sudo certbot certonly --webroot \
+  -w /home/admin/saarmove-infrastructure/certbot/www \
+  -d sok.saarmove.com \
+  --email your-email@example.com \
+  --agree-tos \
+  --no-eff-email
+```
+
+**⚠️ IMPORTANT**: After obtaining the certificate:
+
+1. Check certificate path (in case certbot added a suffix like `-0001`):
+   ```bash
+   ls -la /etc/letsencrypt/live/ | grep sok
+   ```
+
+2. Update the nginx configuration to enable HTTPS:
+   ```bash
+   nano ~/saarmove-infrastructure/nginx/conf.d/40-sok.conf
+   ```
+   
+   - Uncomment the HTTPS server block
+   - Update SSL certificate paths if certbot added a suffix (e.g., `sok.saarmove.com-0001`)
+   - Uncomment the HTTP to HTTPS redirect line: `return 301 https://$host$request_uri;`
+   - Comment out or remove the temporary HTTP location blocks
+
+   Final configuration should look like:
+   ```nginx
+   # SoK Research Dashboard Configuration
+   server {
+       listen 80;
+       server_name sok.saarmove.com;
+
+       location /.well-known/acme-challenge/ {
+           root /var/www/certbot;
+       }
+
+       return 301 https://$host$request_uri;
+   }
+
+   server {
+       listen 443 ssl;
+       http2 on;
+       server_name sok.saarmove.com;
+
+       ssl_certificate /etc/letsencrypt/live/sok.saarmove.com/fullchain.pem;
+       ssl_certificate_key /etc/letsencrypt/live/sok.saarmove.com/privkey.pem;
+       
+       include /etc/nginx/snippets/ssl-common.conf;
+       include /etc/nginx/snippets/security-headers.conf;
+
+       location / {
+           limit_req zone=general_limit burst=50 nodelay;
+           proxy_pass http://sok-research-frontend:80;
+           include /etc/nginx/snippets/proxy-headers.conf;
+       }
+
+       location /api/ {
+           limit_req zone=api_limit burst=20 nodelay;
+           proxy_pass http://sok-research-backend:3000/api/;
+           include /etc/nginx/snippets/proxy-headers.conf;
+       }
+   }
+   ```
+
+---
+
+## Step 11: Update Nginx Configuration for HTTPS
+
+After obtaining the SSL certificate, update the nginx configuration to enable HTTPS (see Step 10 notes above).
+
+Then test and reload:
+
+```bash
+# Test the updated configuration
+cd ~/saarmove-infrastructure
+docker compose exec nginx nginx -t
+
+# If test passes, reload nginx
+docker compose exec nginx nginx -s reload
 ```
 
 ---
