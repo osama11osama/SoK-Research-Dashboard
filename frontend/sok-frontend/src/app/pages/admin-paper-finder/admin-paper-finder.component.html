@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-slate-50">
+<div class="min-h-screen" style="background-color: var(--bg-primary);">
   <!-- Sidebar Navigation -->
   <nav class="fixed left-0 top-0 h-full w-64 bg-slate-900 text-white p-6 hidden md:block">
     <div class="flex items-center gap-3 mb-10">
@@ -46,6 +46,13 @@
         </svg>
         <span>Threat Models</span>
       </a>
+      <a routerLink="/app/admin/settings" routerLinkActive="bg-slate-800 text-blue-400" [routerLinkActiveOptions]="{exact: false}" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-400 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <span>Settings</span>
+      </a>
     </div>
 
     <div class="space-y-1 mt-6">
@@ -58,37 +65,54 @@
       </a>
     </div>
 
-    <div class="absolute bottom-10 left-6 right-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700">
-      <p class="text-sm font-medium" *ngIf="currentUser$ | async as user">{{ user.displayName }}</p>
-      <p class="text-xs text-slate-400" *ngIf="currentUser$ | async as user">{{ user.role }}</p>
+    <div class="absolute bottom-10 left-6 right-6">
+      <div *ngIf="currentUser$ | async as user" class="p-4 bg-slate-800/50 rounded-xl border border-slate-700">
+        <p class="text-sm font-medium">{{ user.displayName }}</p>
+        <p class="text-xs text-slate-400">{{ user.role }}</p>
+      </div>
+      <button (click)="logout()" class="w-full mt-2 px-4 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-md transition-colors text-sm">
+        Logout
+      </button>
     </div>
   </nav>
 
   <!-- Main Content -->
   <main class="md:ml-64 p-8">
-    <header class="mb-8">
-      <h2 class="text-3xl font-bold text-slate-800 mb-2">Multi-Source Paper Finder Tool</h2>
-      <p class="text-slate-500">Search and add research papers from multiple academic databases simultaneously</p>
+    <header class="flex justify-between items-end mb-8">
+      <div>
+        <h2 class="text-3xl font-bold mb-2" style="color: var(--text-primary);">Multi-Source Paper Finder Tool</h2>
+        <p style="color: var(--text-secondary);">Search and add research papers from multiple academic databases simultaneously</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Theme Toggle -->
+        <app-theme-toggle></app-theme-toggle>
+        <!-- Notification Bell -->
+        <app-notification-bell></app-notification-bell>
+      </div>
     </header>
 
     <!-- Comprehensive Tool Description -->
     <div class="space-y-6 mb-8">
       <!-- What is this tool? -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-lg shadow-sm overflow-hidden">
+      <div class="border-l-4 rounded-lg shadow-sm overflow-hidden" style="background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary)); border-color: var(--accent-primary);">
         <button 
           (click)="toggleSection('whatIsTool')"
-          class="w-full flex items-center justify-between p-6 hover:bg-blue-100/50 transition-colors"
+          class="w-full flex items-center justify-between p-6 transition-colors"
+          style="background-color: transparent;"
+          onmouseover="this.style.backgroundColor='var(--bg-tertiary)'"
+          onmouseout="this.style.backgroundColor='transparent'"
         >
           <div class="flex items-center gap-4">
             <div class="flex-shrink-0">
-              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-8 h-8" style="color: var(--accent-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-800">What is this tool?</h3>
+            <h3 class="text-xl font-bold" style="color: var(--text-primary);">What is this tool?</h3>
           </div>
           <svg 
-            class="w-6 h-6 text-slate-600 transition-transform"
+            class="w-6 h-6 transition-transform"
+            style="color: var(--text-secondary);"
             [class.rotate-180]="expandedSections.whatIsTool"
             fill="none" 
             stroke="currentColor" 
@@ -103,15 +127,15 @@
           [class.max-h-[2000px]]="expandedSections.whatIsTool"
         >
           <div class="px-6 pb-6">
-            <p class="text-slate-700 mb-4 leading-relaxed">
+            <p class="mb-4 leading-relaxed" style="color: var(--text-primary);">
               The <strong>Multi-Source Paper Finder Tool</strong> is an intelligent academic search aggregator designed specifically for 
               Systematization of Knowledge (SoK) research. Instead of manually searching multiple databases one by one, this tool 
               simultaneously queries <strong>five major academic sources</strong> and intelligently merges their results into a unified, 
               deduplicated list.
             </p>
-            <div class="bg-white/60 rounded-lg p-4 mb-4">
-              <p class="text-sm font-semibold text-slate-800 mb-2">Supported Academic Databases:</p>
-              <ul class="space-y-2 text-sm text-slate-700">
+            <div class="rounded-lg p-4 mb-4" style="background-color: var(--bg-secondary);">
+              <p class="text-sm font-semibold mb-2" style="color: var(--text-primary);">Supported Academic Databases:</p>
+              <ul class="space-y-2 text-sm" style="color: var(--text-primary);">
                 <li class="flex items-start gap-2">
                   <span class="text-blue-600 font-bold">•</span>
                   <span><strong>DBLP:</strong> Computer Science Bibliography - Best for conference papers (USENIX, NDSS, CCS, etc.)</span>
@@ -139,21 +163,25 @@
       </div>
 
       <!-- Why use this tool? -->
-      <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-lg shadow-sm overflow-hidden">
+      <div class="border-l-4 rounded-lg shadow-sm overflow-hidden" style="background: linear-gradient(to right, var(--accent-success), var(--accent-secondary)); border-color: var(--accent-success);">
         <button 
           (click)="toggleSection('whyUseTool')"
-          class="w-full flex items-center justify-between p-6 hover:bg-green-100/50 transition-colors"
+          class="w-full flex items-center justify-between p-6 transition-colors"
+          style="background-color: transparent;"
+          onmouseover="this.style.backgroundColor='var(--bg-tertiary)'"
+          onmouseout="this.style.backgroundColor='transparent'"
         >
           <div class="flex items-center gap-4">
             <div class="flex-shrink-0">
-              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-8 h-8" style="color: var(--accent-success);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-800">Why use this tool?</h3>
+            <h3 class="text-xl font-bold" style="color: var(--text-primary);">Why use this tool?</h3>
           </div>
           <svg 
-            class="w-6 h-6 text-slate-600 transition-transform"
+            class="w-6 h-6 transition-transform"
+            style="color: var(--text-secondary);"
             [class.rotate-180]="expandedSections.whyUseTool"
             fill="none" 
             stroke="currentColor" 
@@ -168,9 +196,9 @@
           [class.max-h-[2000px]]="expandedSections.whyUseTool"
         >
           <div class="px-6 pb-6">
-            <div class="space-y-3 text-slate-700">
+            <div class="space-y-3" style="color: var(--text-primary);">
               <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--accent-success);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
                 <div>
@@ -179,7 +207,7 @@
                 </div>
               </div>
               <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--accent-success);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
                 <div>
@@ -188,7 +216,7 @@
                 </div>
               </div>
               <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--accent-success);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
                 <div>
@@ -197,7 +225,7 @@
                 </div>
               </div>
               <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--accent-success);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
                 <div>
@@ -206,7 +234,7 @@
                 </div>
               </div>
               <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--accent-success);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
                 <div>
@@ -220,21 +248,25 @@
       </div>
 
       <!-- How to use effectively -->
-      <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 rounded-lg shadow-sm overflow-hidden">
+      <div class="border-l-4 rounded-lg shadow-sm overflow-hidden" style="background: linear-gradient(to right, var(--accent-secondary), var(--accent-primary)); border-color: var(--accent-secondary);">
         <button 
           (click)="toggleSection('howToUse')"
-          class="w-full flex items-center justify-between p-6 hover:bg-purple-100/50 transition-colors"
+          class="w-full flex items-center justify-between p-6 transition-colors"
+          style="background-color: transparent;"
+          onmouseover="this.style.backgroundColor='var(--bg-tertiary)'"
+          onmouseout="this.style.backgroundColor='transparent'"
         >
           <div class="flex items-center gap-4">
             <div class="flex-shrink-0">
-              <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-8 h-8" style="color: var(--accent-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-slate-800">How to use this tool effectively</h3>
+            <h3 class="text-xl font-bold" style="color: var(--text-primary);">How to use this tool effectively</h3>
           </div>
           <svg 
-            class="w-6 h-6 text-slate-600 transition-transform"
+            class="w-6 h-6 transition-transform"
+            style="color: var(--text-secondary);"
             [class.rotate-180]="expandedSections.howToUse"
             fill="none" 
             stroke="currentColor" 
@@ -251,11 +283,11 @@
           <div class="px-6 pb-6">
             <div class="space-y-4">
               <div>
-                <p class="font-semibold text-slate-800 mb-2">1. Choose Your Search Sources</p>
-                <p class="text-sm text-slate-700 mb-2">
+                <p class="font-semibold mb-2" style="color: var(--text-primary);">1. Choose Your Search Sources</p>
+                <p class="text-sm mb-2" style="color: var(--text-primary);">
                   Select which databases to search based on your needs:
                 </p>
-                <ul class="text-sm text-slate-600 space-y-1 ml-4 list-disc">
+                <ul class="text-sm space-y-1 ml-4 list-disc" style="color: var(--text-secondary);">
                   <li><strong>For conference papers:</strong> Enable DBLP and OpenAlex</li>
                   <li><strong>For recent preprints:</strong> Enable arXiv</li>
                   <li><strong>For comprehensive coverage:</strong> Enable all sources</li>
@@ -263,23 +295,23 @@
                 </ul>
               </div>
               <div>
-                <p class="font-semibold text-slate-800 mb-2">2. Craft Effective Search Queries</p>
-                <p class="text-sm text-slate-700 mb-2">
+                <p class="font-semibold mb-2" style="color: var(--text-primary);">2. Craft Effective Search Queries</p>
+                <p class="text-sm mb-2" style="color: var(--text-primary);">
                   Use specific, relevant keywords:
                 </p>
-                <ul class="text-sm text-slate-600 space-y-1 ml-4 list-disc">
-                  <li>Combine multiple terms: <code class="bg-slate-200 px-1 rounded">"browser extension" AND security</code></li>
-                  <li>Use domain-specific terms: <code class="bg-slate-200 px-1 rounded">manifest v3</code>, <code class="bg-slate-200 px-1 rounded">web extension privacy</code></li>
-                  <li>Try variations: <code class="bg-slate-200 px-1 rounded">Chrome extension</code>, <code class="bg-slate-200 px-1 rounded">Firefox add-on</code></li>
-                  <li>Include venue names: <code class="bg-slate-200 px-1 rounded">USENIX</code>, <code class="bg-slate-200 px-1 rounded">NDSS</code> (works best with DBLP)</li>
+                <ul class="text-sm space-y-1 ml-4 list-disc" style="color: var(--text-secondary);">
+                  <li>Combine multiple terms: <code class="px-1 rounded" style="background-color: var(--bg-secondary);">"browser extension" AND security</code></li>
+                  <li>Use domain-specific terms: <code class="px-1 rounded" style="background-color: var(--bg-secondary);">manifest v3</code>, <code class="px-1 rounded" style="background-color: var(--bg-secondary);">web extension privacy</code></li>
+                  <li>Try variations: <code class="px-1 rounded" style="background-color: var(--bg-secondary);">Chrome extension</code>, <code class="px-1 rounded" style="background-color: var(--bg-secondary);">Firefox add-on</code></li>
+                  <li>Include venue names: <code class="px-1 rounded" style="background-color: var(--bg-secondary);">USENIX</code>, <code class="px-1 rounded" style="background-color: var(--bg-secondary);">NDSS</code> (works best with DBLP)</li>
                 </ul>
               </div>
               <div>
-                <p class="font-semibold text-slate-800 mb-2">3. Review and Filter Results</p>
-                <p class="text-sm text-slate-700 mb-2">
+                <p class="font-semibold mb-2" style="color: var(--text-primary);">3. Review and Filter Results</p>
+                <p class="text-sm mb-2" style="color: var(--text-primary);">
                   After searching, you'll see:
                 </p>
-                <ul class="text-sm text-slate-600 space-y-1 ml-4 list-disc">
+                <ul class="text-sm space-y-1 ml-4 list-disc" style="color: var(--text-secondary);">
                   <li><strong>Source badges:</strong> Shows which databases found each paper</li>
                   <li><strong>Citation counts:</strong> Helps identify influential papers</li>
                   <li><strong>Abstract previews:</strong> Quick relevance assessment</li>
@@ -287,20 +319,20 @@
                 </ul>
               </div>
               <div>
-                <p class="font-semibold text-slate-800 mb-2">4. Add Papers to Your Collection</p>
-                <p class="text-sm text-slate-700 mb-2">
+                <p class="font-semibold mb-2" style="color: var(--text-primary);">4. Add Papers to Your Collection</p>
+                <p class="text-sm mb-2" style="color: var(--text-primary);">
                   When you find relevant papers:
                 </p>
-                <ul class="text-sm text-slate-600 space-y-1 ml-4 list-disc">
+                <ul class="text-sm space-y-1 ml-4 list-disc" style="color: var(--text-secondary);">
                   <li>Click "Add Paper" to open the form</li>
                   <li>Review and edit metadata if needed</li>
                   <li>Set reading status (To Read, In Progress, Read)</li>
                   <li>The system automatically logs the search query and sources used</li>
                 </ul>
               </div>
-              <div class="bg-white/60 rounded-lg p-3 mt-3">
-                <p class="text-sm font-semibold text-slate-800 mb-1">💡 Pro Tip:</p>
-                <p class="text-sm text-slate-700">
+              <div class="rounded-lg p-3 mt-3" style="background-color: var(--bg-secondary);">
+                <p class="text-sm font-semibold mb-1" style="color: var(--text-primary);">💡 Pro Tip:</p>
+                <p class="text-sm" style="color: var(--text-primary);">
                   Use the predefined quick searches for common topics, then refine your query based on initial results. 
                   Papers found in multiple sources are often more influential and should be prioritized.
                 </p>
@@ -312,14 +344,15 @@
     </div>
 
     <!-- Search Section -->
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
+    <div class="p-6 rounded-2xl shadow-sm mb-6" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);">
       <div class="flex gap-4 mb-4">
         <input 
           type="text" 
           [(ngModel)]="searchQuery" 
           (keyup.enter)="search()"
           placeholder="Enter search query (e.g., 'browser extension security')"
-          class="flex-1 px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+          class="flex-1 px-4 py-2 rounded-lg outline-none"
+          style="background-color: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color);"
         />
         <input 
           type="number" 
@@ -327,12 +360,14 @@
           min="1" 
           max="100"
           placeholder="Max results"
-          class="w-32 px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+          class="w-32 px-4 py-2 rounded-lg outline-none"
+          style="background-color: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color);"
         />
         <button 
           (click)="search()" 
           [disabled]="searching"
-          class="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white px-6 py-2 rounded-lg transition-all shadow-lg shadow-blue-200"
+          class="px-6 py-2 rounded-lg transition-all shadow-lg"
+          style="background-color: var(--accent-primary); color: var(--button-text);"
         >
           <span *ngIf="!searching">Search</span>
           <span *ngIf="searching">Searching...</span>
@@ -340,35 +375,47 @@
       </div>
 
       <!-- Source Selection -->
-      <div class="mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
-        <p class="text-sm font-medium text-slate-700 mb-3">Search Sources:</p>
+      <div class="mb-4 p-4 rounded-lg" style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color);">
+        <p class="text-sm font-medium mb-3" style="color: var(--text-primary);">Search Sources:</p>
         <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
           <label 
-            *ngFor="let source of availableSources"
-            class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-white transition-colors"
+            *ngFor="let source of enabledSources"
+            class="flex items-center gap-2 cursor-pointer p-3 rounded-lg hover:shadow-sm transition-all"
+            style="min-height: 44px; border: 1px solid var(--border-color); background-color: var(--bg-secondary);"
+            onmouseover="this.style.backgroundColor='var(--bg-hover)'"
+            onmouseout="this.style.backgroundColor='var(--bg-secondary)'"
           >
             <input
               type="checkbox"
               [checked]="isSourceSelected(source.id)"
               (change)="toggleSource(source.id)"
-              class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              class="w-5 h-5 rounded cursor-pointer"
+              style="min-width: 20px; min-height: 20px; accent-color: var(--accent-primary);"
             />
-            <div>
-              <p class="text-sm font-medium text-slate-800">{{ source.name }}</p>
-              <p class="text-xs text-slate-500">{{ source.description }}</p>
+            <div class="flex-1">
+              <p class="text-sm font-medium" style="color: var(--text-primary);">{{ source.name }}</p>
+              <p class="text-xs" style="color: var(--text-secondary);">{{ source.description }}</p>
             </div>
           </label>
+        </div>
+        <div *ngIf="enabledSources.length === 0" class="p-4 rounded-lg" style="background-color: var(--bg-warning); border: 1px solid var(--border-warning);">
+          <p class="text-sm" style="color: var(--text-warning);">
+            <strong>No sources available:</strong> All search sources have been disabled by the administrator.
+          </p>
         </div>
       </div>
 
       <!-- Predefined Queries -->
       <div class="mt-4">
-        <p class="text-sm text-slate-500 mb-2">Quick searches:</p>
+        <p class="text-sm mb-2" style="color: var(--text-secondary);">Quick searches:</p>
         <div class="flex flex-wrap gap-2">
           <button 
             *ngFor="let query of predefinedQueries"
             (click)="usePredefinedQuery(query)"
-            class="px-3 py-1 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md transition-colors"
+            class="px-3 py-1 text-sm rounded-md transition-colors"
+            style="background-color: var(--bg-tertiary); color: var(--text-primary);"
+            onmouseover="this.style.backgroundColor='var(--bg-hover)'"
+            onmouseout="this.style.backgroundColor='var(--bg-tertiary)'"
           >
             {{ query }}
           </button>
@@ -377,16 +424,19 @@
     </div>
 
     <!-- Results Section -->
-    <div *ngIf="papers.length > 0" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+    <div *ngIf="papers.length > 0" class="p-6 rounded-2xl shadow-sm" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-xl font-bold text-slate-800">Search Results</h3>
-        <span class="text-sm text-slate-500">Found {{ totalResults }} papers (showing {{ papers.length }})</span>
+        <h3 class="text-xl font-bold" style="color: var(--text-primary);">Search Results</h3>
+        <span class="text-sm" style="color: var(--text-secondary);">Found {{ totalResults }} papers (showing {{ papers.length }})</span>
       </div>
 
       <div class="space-y-4">
         <div 
           *ngFor="let paper of papers" 
-          class="p-4 border border-slate-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all"
+          class="p-4 rounded-lg transition-all"
+          style="border: 1px solid var(--border-color); background-color: var(--bg-secondary);"
+          onmouseover="this.style.borderColor='var(--accent-primary)'; this.style.boxShadow='0 4px 6px -1px rgba(0, 0, 0, 0.1)';"
+          onmouseout="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none';"
         >
           <div class="flex justify-between items-start gap-4">
             <div class="flex-1">
@@ -394,30 +444,30 @@
               <div class="flex flex-wrap gap-2 mb-2">
                 <span 
                   *ngFor="let source of (paper.sources || [paper.source])"
-                  [class]="'px-2 py-0.5 rounded-full text-xs font-medium ' + getSourceBadgeColor(source)"
+                  [class]="'source-label px-2 py-0.5 rounded-full text-xs font-medium ' + getSourceBadgeColor(source)"
                 >
                   {{ source }}
                 </span>
-                <span *ngIf="(paper.sources || []).length > 1" class="px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                <span *ngIf="(paper.sources || []).length > 1" class="source-label px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                   Found in {{ (paper.sources || []).length }} sources
                 </span>
               </div>
 
-              <h4 class="text-lg font-bold text-slate-800 mb-2">{{ paper.title }}</h4>
-              <p class="text-slate-600 text-sm mb-2">by {{ paper.authors }}</p>
+              <h4 class="text-lg font-bold mb-2" style="color: var(--text-primary);">{{ paper.title }}</h4>
+              <p class="text-sm mb-2" style="color: var(--text-secondary);">by {{ paper.authors }}</p>
               
               <!-- Abstract Preview -->
-              <p *ngIf="paper.abstract" class="text-sm text-slate-600 mb-3 line-clamp-2">
+              <p *ngIf="paper.abstract" class="text-sm mb-3 line-clamp-2" style="color: var(--text-secondary);">
                 {{ paper.abstract }}
               </p>
 
-              <div class="flex flex-wrap gap-4 text-sm text-slate-500 mb-3">
+              <div class="flex flex-wrap gap-4 text-sm mb-3" style="color: var(--text-secondary);">
                 <span *ngIf="paper.venue">{{ paper.venue }}</span>
                 <span *ngIf="paper.year">{{ paper.year }}</span>
-                <span *ngIf="paper.citationCount !== undefined" class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded">
+                <span *ngIf="paper.citationCount !== undefined" class="px-2 py-0.5 rounded" style="background-color: var(--bg-accent); color: var(--text-accent);">
                   {{ paper.citationCount }} citations
                 </span>
-                <span *ngIf="paper.influentialCitationCount" class="px-2 py-0.5 bg-purple-50 text-purple-700 rounded">
+                <span *ngIf="paper.influentialCitationCount" class="px-2 py-0.5 rounded" style="background-color: var(--bg-accent); color: var(--text-accent);">
                   {{ paper.influentialCitationCount }} influential
                 </span>
               </div>
@@ -430,7 +480,8 @@
                   target="_blank" 
                   rel="noopener noreferrer"
                   (click)="$event.stopPropagation()"
-                  class="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  class="text-sm font-medium"
+                  style="color: var(--accent-primary);"
                 >
                   View Paper →
                 </a>
@@ -438,7 +489,8 @@
                   *ngIf="paper.semanticScholarId"
                   (click)="getSummary(paper); $event.stopPropagation()"
                   [disabled]="loadingSummary"
-                  class="text-purple-600 hover:text-purple-700 text-sm font-medium disabled:opacity-50"
+                  class="text-sm font-medium disabled:opacity-50"
+                  style="color: var(--accent-secondary);"
                 >
                   <span *ngIf="!loadingSummary">Get AI Summary</span>
                   <span *ngIf="loadingSummary">Loading...</span>
@@ -447,7 +499,8 @@
             </div>
             <button 
               (click)="selectPaper(paper); $event.stopPropagation()"
-              class="ml-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex-shrink-0"
+              class="ml-4 px-4 py-2 rounded-lg transition-colors flex-shrink-0"
+              style="background-color: var(--accent-primary); color: var(--button-text);"
             >
               Add Paper
             </button>
@@ -457,31 +510,35 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!searching && papers.length === 0 && searchQuery" class="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-slate-200">
-      <svg class="mx-auto text-slate-300 mb-4" width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div *ngIf="!searching && papers.length === 0 && searchQuery" class="text-center py-20 rounded-2xl border-2 border-dashed" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+      <svg class="mx-auto mb-4" width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--text-secondary);">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
       </svg>
-      <p class="text-slate-500 font-medium">No papers found. Try a different search query.</p>
+      <p class="font-medium" style="color: var(--text-secondary);">No papers found. Try a different search query.</p>
     </div>
   </main>
 
   <!-- AI Summary Modal -->
-  <div *ngIf="showSummaryModal && paperSummary" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="closeSummaryModal()">
+  <div *ngIf="showSummaryModal && paperSummary" class="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4" style="background-color: rgba(0, 0, 0, 0.6);" (click)="closeSummaryModal()">
     <div 
-      class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
+      class="w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
+      style="background-color: var(--bg-secondary);"
       (click)="$event.stopPropagation()"
     >
       <!-- Header -->
-      <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-gradient-to-r from-purple-50 to-indigo-50">
+      <div class="p-5 flex justify-between items-center" style="border-bottom: 1px solid var(--border-color); background: linear-gradient(to right, var(--accent-secondary), var(--accent-primary));">
         <div class="flex items-center gap-3">
-          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6" style="color: var(--accent-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
           </svg>
-          <h3 class="text-xl font-bold text-slate-800">AI Summary (Semantic Scholar)</h3>
+          <h3 class="text-xl font-bold" style="color: var(--text-primary);">AI Summary (Semantic Scholar)</h3>
         </div>
         <button 
           (click)="closeSummaryModal()" 
-          class="p-2 hover:bg-white/60 rounded-lg transition-colors text-slate-600 hover:text-slate-800"
+          class="p-2 rounded-lg transition-colors"
+          style="color: var(--text-secondary);"
+          onmouseover="this.style.backgroundColor='var(--bg-tertiary)'"
+          onmouseout="this.style.backgroundColor='transparent'"
           title="Close"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -494,34 +551,34 @@
       <div class="flex-1 overflow-y-auto p-6 space-y-5">
         <!-- Paper Title -->
         <div>
-          <h4 class="text-lg font-bold text-slate-800 leading-tight">{{ paperSummary.title }}</h4>
+          <h4 class="text-lg font-bold leading-tight" style="color: var(--text-primary);">{{ paperSummary.title }}</h4>
         </div>
 
         <!-- TLDR Section -->
-        <div *ngIf="paperSummary.tldr" class="bg-gradient-to-r from-purple-50 to-indigo-50 border-l-4 border-purple-500 rounded-lg p-5 shadow-sm">
+        <div *ngIf="paperSummary.tldr" class="border-l-4 rounded-lg p-5 shadow-sm" style="background: linear-gradient(to right, var(--accent-secondary), var(--accent-primary)); border-color: var(--accent-secondary);">
           <div class="flex items-center gap-2 mb-3">
-            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5" style="color: var(--accent-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
             </svg>
-            <p class="text-sm font-bold text-purple-800 uppercase tracking-wide">TLDR (AI Summary)</p>
+            <p class="text-sm font-bold uppercase tracking-wide" style="color: var(--text-primary);">TLDR (AI Summary)</p>
           </div>
-          <p class="text-slate-700 leading-relaxed">{{ paperSummary.tldr }}</p>
+          <p class="leading-relaxed" style="color: var(--text-primary);">{{ paperSummary.tldr }}</p>
         </div>
 
         <!-- Abstract Section -->
-        <div *ngIf="paperSummary.abstract" class="bg-slate-50 border border-slate-200 rounded-lg p-5">
+        <div *ngIf="paperSummary.abstract" class="rounded-lg p-5" style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color);">
           <div class="flex items-center gap-2 mb-3">
-            <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5" style="color: var(--text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
-            <p class="text-sm font-bold text-slate-700 uppercase tracking-wide">Abstract</p>
+            <p class="text-sm font-bold uppercase tracking-wide" style="color: var(--text-primary);">Abstract</p>
           </div>
-          <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">{{ paperSummary.abstract }}</p>
+          <p class="text-sm leading-relaxed whitespace-pre-wrap" style="color: var(--text-secondary);">{{ paperSummary.abstract }}</p>
         </div>
 
         <!-- No content message -->
-        <div *ngIf="!paperSummary.tldr && !paperSummary.abstract" class="text-center py-8 text-slate-500">
-          <svg class="w-12 h-12 mx-auto mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div *ngIf="!paperSummary.tldr && !paperSummary.abstract" class="text-center py-8" style="color: var(--text-secondary);">
+          <svg class="w-12 h-12 mx-auto mb-3" style="color: var(--text-tertiary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
           </svg>
           <p>No summary or abstract available for this paper.</p>
@@ -529,10 +586,11 @@
       </div>
 
       <!-- Footer -->
-      <div class="p-5 border-t border-slate-200 bg-slate-50 flex justify-end">
+      <div class="p-5 flex justify-end" style="border-top: 1px solid var(--border-color); background-color: var(--bg-tertiary);">
         <button 
           (click)="closeSummaryModal()" 
-          class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm hover:shadow-md"
+          class="px-6 py-2.5 font-medium rounded-lg transition-colors shadow-sm hover:shadow-md"
+          style="background-color: var(--accent-primary); color: var(--button-text);"
         >
           Close
         </button>
@@ -541,70 +599,76 @@
   </div>
 
   <!-- Add Paper Modal -->
-  <div *ngIf="showAddModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
-      <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
-        <h3 class="text-xl font-bold">Add Paper</h3>
-        <button (click)="closeAddModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+  <div *ngIf="showAddModal" class="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4" style="background-color: rgba(0, 0, 0, 0.6);">
+    <div class="w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto" style="background-color: var(--bg-secondary);">
+      <div class="p-6 flex justify-between items-center sticky top-0 z-10" style="border-bottom: 1px solid var(--border-color); background-color: var(--bg-secondary);">
+        <h3 class="text-xl font-bold" style="color: var(--text-primary);">Add Paper</h3>
+        <button (click)="closeAddModal()" style="color: var(--text-secondary);">✕</button>
       </div>
       
       <div class="p-6 space-y-4">
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Title *</label>
+          <label class="block text-sm font-medium mb-1" style="color: var(--text-primary);">Title *</label>
           <input 
             type="text" 
             [(ngModel)]="paperForm.title" 
-            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            class="w-full px-4 py-2 rounded-lg outline-none"
+            style="background-color: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color);"
             required
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Authors *</label>
+          <label class="block text-sm font-medium mb-1" style="color: var(--text-primary);">Authors *</label>
           <input 
             type="text" 
             [(ngModel)]="paperForm.authors" 
-            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            class="w-full px-4 py-2 rounded-lg outline-none"
+            style="background-color: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color);"
             required
           />
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Venue</label>
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-primary);">Venue</label>
             <input 
               type="text" 
               [(ngModel)]="paperForm.venue" 
-              class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+              class="w-full px-4 py-2 rounded-lg outline-none"
+              style="background-color: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color);"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Year</label>
+            <label class="block text-sm font-medium mb-1" style="color: var(--text-primary);">Year</label>
             <input 
               type="number" 
               [(ngModel)]="paperForm.year" 
               min="1900" 
               max="2100"
-              class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+              class="w-full px-4 py-2 rounded-lg outline-none"
+              style="background-color: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color);"
             />
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Link to PDF/URL</label>
+          <label class="block text-sm font-medium mb-1" style="color: var(--text-primary);">Link to PDF/URL</label>
           <input 
             type="text" 
             [(ngModel)]="paperForm.url" 
             placeholder="https://..."
-            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            class="w-full px-4 py-2 rounded-lg outline-none"
+            style="background-color: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color);"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Reading Status</label>
+          <label class="block text-sm font-medium mb-1" style="color: var(--text-primary);">Reading Status</label>
           <select 
             [(ngModel)]="paperForm.readingStatus" 
-            class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+            class="w-full px-4 py-2 rounded-lg outline-none"
+            style="background-color: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color);"
           >
             <option value="TO_READ">To Read</option>
             <option value="IN_PROGRESS">In Progress</option>
@@ -613,17 +677,19 @@
         </div>
       </div>
 
-      <div class="p-6 bg-slate-50 flex gap-3 sticky bottom-0 bg-white border-t border-slate-200">
+      <div class="p-6 flex gap-3 sticky bottom-0" style="border-top: 1px solid var(--border-color); background-color: var(--bg-tertiary);">
         <button 
           (click)="closeAddModal()" 
-          class="flex-1 px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
+          class="flex-1 px-4 py-2 font-medium rounded-lg transition-colors"
+          style="color: var(--text-secondary); background-color: var(--bg-secondary);"
         >
           Cancel
         </button>
         <button 
           (click)="addPaper()" 
           [disabled]="addingPaper || !paperForm.title || !paperForm.authors"
-          class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-medium rounded-lg shadow-md shadow-blue-200 transition-colors"
+          class="flex-1 px-4 py-2 font-medium rounded-lg shadow-md transition-colors"
+          style="background-color: var(--accent-primary); color: var(--button-text);"
         >
           <span *ngIf="!addingPaper">Add Paper</span>
           <span *ngIf="addingPaper">Adding...</span>

@@ -6,11 +6,13 @@ import { ToastrService } from 'ngx-toastr';
 import { AdminService, AdminUser } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
 import { SettingsService } from '../../services/settings.service';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell.component';
+import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, NotificationBellComponent, ThemeToggleComponent],
   templateUrl: './admin-users.component.html',
   styleUrl: './admin-users.component.css'
 })
@@ -29,11 +31,22 @@ export class AdminUsersComponent implements OnInit {
   loading = false;
   showPaperTimestamps = false;
   settingsLoading = false;
+  sourceLoading = false;
+
+  // Available search sources
+  availableSources = [
+    { id: 'dblp', name: 'DBLP', description: 'Computer Science Bibliography', enabled: true },
+    { id: 'semantic', name: 'Semantic Scholar', description: 'AI summaries & citations', enabled: true },
+    { id: 'openalex', name: 'OpenAlex', description: 'Open alternative to Google Scholar', enabled: true },
+    { id: 'arxiv', name: 'arXiv', description: 'Preprints & recent papers', enabled: true },
+    { id: 'crossref', name: 'Crossref', description: 'DOI validation & metadata', enabled: true }
+  ];
 
   ngOnInit() {
     this.loadPendingUsers();
     this.loadAllUsers();
     this.loadSettings();
+    this.loadSourceSettings();
   }
 
   loadSettings() {
@@ -45,6 +58,61 @@ export class AdminUsersComponent implements OnInit {
         console.error('Failed to load settings:', err);
       }
     });
+  }
+
+  loadSourceSettings() {
+    this.settingsService.getSettings().subscribe({
+      next: (response) => {
+        const sourceSettings = response.settings['availableSources'];
+        if (sourceSettings && typeof sourceSettings === 'object') {
+          this.availableSources.forEach(source => {
+            source.enabled = sourceSettings[source.id] !== false;
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load source settings:', err);
+      }
+    });
+  }
+
+  updateSourceVisibility(sourceId: string) {
+    this.sourceLoading = true;
+    const source = this.availableSources.find(s => s.id === sourceId);
+    if (!source) return;
+
+    const currentSettings = this.settingsService.getSettingValue('availableSources') || {};
+    const updatedSettings = {
+      ...currentSettings,
+      [sourceId]: source.enabled
+    };
+
+    this.settingsService.updateSetting('availableSources', updatedSettings, 'Control which search sources are available to users').subscribe({
+      next: () => {
+        this.toastr.success(`${source.name} ${source.enabled ? 'enabled' : 'disabled'} successfully`);
+        this.sourceLoading = false;
+        // Notify other components
+        window.dispatchEvent(new CustomEvent('sources-updated'));
+      },
+      error: (err) => {
+        console.error('Failed to update source settings:', err);
+        this.toastr.error('Failed to update source settings');
+        // Revert the change
+        source.enabled = !source.enabled;
+        this.sourceLoading = false;
+      }
+    });
+  }
+
+  getSourceBadgeColor(sourceName: string): string {
+    const colors: Record<string, string> = {
+      'DBLP': 'bg-blue-100 text-blue-800',
+      'Semantic Scholar': 'bg-purple-100 text-purple-800',
+      'OpenAlex': 'bg-green-100 text-green-800',
+      'arXiv': 'bg-orange-100 text-orange-800',
+      'Crossref': 'bg-indigo-100 text-indigo-800'
+    };
+    return colors[sourceName] || 'bg-slate-100 text-slate-800';
   }
 
   updateTimestampVisibility() {
@@ -194,6 +262,10 @@ export class AdminUsersComponent implements OnInit {
       default:
         return 'bg-slate-100 text-slate-700';
     }
+  }
+
+  get enabledSourcesCount(): number {
+    return this.availableSources.filter(s => s.enabled).length;
   }
 }
 

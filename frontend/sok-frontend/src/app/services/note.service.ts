@@ -33,5 +33,16 @@ export class NoteService {
       visibility
     });
   }
+
+  updateNote(paperId: string, noteId: string, content?: string, visibility?: 'PRIVATE' | 'PUBLIC'): Observable<{ note: Note }> {
+    const body: any = {};
+    if (content !== undefined) body.content = content;
+    if (visibility !== undefined) body.visibility = visibility;
+    return this.http.patch<{ note: Note }>(`${this.apiUrl}/papers/${paperId}/notes/${noteId}`, body);
+  }
+
+  deleteNote(paperId: string, noteId: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/papers/${paperId}/notes/${noteId}`);
+  }
 }
 

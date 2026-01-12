@@ -6,11 +6,13 @@ import { ToastrService } from 'ngx-toastr';
 import { forkJoin } from 'rxjs';
 import { ThreatModelService, ThreatModel } from '../../services/threat-model.service';
 import { AuthService } from '../../services/auth.service';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell.component';
+import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-admin-threat-models',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, NotificationBellComponent, ThemeToggleComponent],
   templateUrl: './admin-threat-models.component.html',
   styleUrl: './admin-threat-models.component.css'
 })

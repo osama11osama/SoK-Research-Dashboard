@@ -50,6 +50,11 @@ export const routes: Routes = [
         canActivate: [adminGuard]
       },
       {
+        path: 'admin/settings',
+        loadComponent: () => import('./pages/admin-settings/admin-settings.component').then(m => m.AdminSettingsComponent),
+        canActivate: [adminGuard]
+      },
+      {
         path: 'tools/paper-finder',
         loadComponent: () => import('./pages/admin-paper-finder/admin-paper-finder.component').then(m => m.AdminPaperFinderComponent)
       },

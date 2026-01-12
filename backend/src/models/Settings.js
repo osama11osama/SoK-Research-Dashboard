@@ -4,7 +4,6 @@ const settingsSchema = new mongoose.Schema({
   key: {
     type: String,
     required: true,
-    unique: true,
     trim: true
   },
   value: {
@@ -23,8 +22,8 @@ const settingsSchema = new mongoose.Schema({
   timestamps: false
 });
 
-// Index for faster lookups
-settingsSchema.index({ key: 1 });
+// Index for faster lookups (with unique constraint)
+settingsSchema.index({ key: 1 }, { unique: true });
 
 module.exports = mongoose.model('Settings', settingsSchema);
 

@@ -6,6 +6,7 @@ const User = require('../models/User');
 const Settings = require('../models/Settings');
 const { authenticate } = require('../middleware/auth');
 const { requireSuperAdmin, logAudit } = require('../middleware/rbac');
+const { notifyPaperAdded, notifyPaperEdited } = require('../utils/notifications');
 
 const router = express.Router();
 
@@ -159,10 +160,46 @@ router.post('/', authenticate, [
     
     await logAudit(req.user._id, 'PAPER_CREATE', 'PAPER', paper._id);
 
+    // Send notifications
+    await notifyPaperAdded(paper._id, req.user._id);
+
     res.status(201).json({ paper });
   } catch (err) {
     console.error('Create paper error:', err);
     res.status(500).json({ message: 'Failed to create paper' });
+  }
+});
+
+// Update reading status (any authenticated user)
+router.patch('/:id/reading-status', authenticate, [
+  body('readingStatus').isIn(['TO_READ', 'IN_PROGRESS', 'READ']).withMessage('Invalid reading status')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const paper = await Paper.findById(req.params.id);
+    if (!paper) {
+      return res.status(404).json({ message: 'Paper not found' });
+    }
+
+    paper.readingStatus = req.body.readingStatus;
+    paper.updatedAt = new Date();
+    await paper.save();
+
+    await logAudit(req.user._id, 'PAPER_UPDATE_READING_STATUS', 'PAPER', paper._id, { 
+      readingStatus: req.body.readingStatus 
+    });
+
+    // Send notifications when reading status changes
+    await notifyPaperEdited(paper._id, req.user._id);
+
+    res.json({ paper });
+  } catch (err) {
+    console.error('Update reading status error:', err);
+    res.status(500).json({ message: 'Failed to update reading status' });
   }
 });
 
@@ -248,6 +285,9 @@ router.patch('/:id', authenticate, requireSuperAdmin, [
     }
 
     await logAudit(req.user._id, 'PAPER_UPDATE', 'PAPER', updatedPaper._id, { changes: req.body });
+
+    // Send notifications
+    await notifyPaperEdited(updatedPaper._id, req.user._id);
 
     // Ensure link field is not in response if it was deleted
     // Convert Mongoose document to plain object if needed

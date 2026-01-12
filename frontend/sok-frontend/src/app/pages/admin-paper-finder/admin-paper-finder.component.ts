@@ -6,11 +6,13 @@ import { ToastrService } from 'ngx-toastr';
 import { AdminService, SearchPaper } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
 import { PaperService } from '../../services/paper.service';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell.component';
+import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-admin-paper-finder',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, NotificationBellComponent, ThemeToggleComponent],
   templateUrl: './admin-paper-finder.component.html',
   styleUrl: './admin-paper-finder.component.css'
 })
@@ -44,12 +46,12 @@ export class AdminPaperFinderComponent implements OnInit {
   };
 
   // Available search sources
-  availableSources = [
-    { id: 'dblp', name: 'DBLP', description: 'Computer Science Bibliography' },
-    { id: 'semantic', name: 'Semantic Scholar', description: 'AI summaries & citations' },
-    { id: 'openalex', name: 'OpenAlex', description: 'Open alternative to Google Scholar' },
-    { id: 'arxiv', name: 'arXiv', description: 'Preprints & recent papers' },
-    { id: 'crossref', name: 'Crossref', description: 'DOI validation & metadata' }
+  availableSources: Array<{ id: string; name: string; description: string; enabled?: boolean }> = [
+    { id: 'dblp', name: 'DBLP', description: 'Computer Science Bibliography', enabled: true },
+    { id: 'semantic', name: 'Semantic Scholar', description: 'AI summaries & citations', enabled: true },
+    { id: 'openalex', name: 'OpenAlex', description: 'Open alternative to Google Scholar', enabled: true },
+    { id: 'arxiv', name: 'arXiv', description: 'Preprints & recent papers', enabled: true },
+    { id: 'crossref', name: 'Crossref', description: 'DOI validation & metadata', enabled: true }
   ];
 
   // Paper form fields
@@ -75,9 +77,29 @@ export class AdminPaperFinderComponent implements OnInit {
   ngOnInit() {
     // Scroll to top when component loads
     window.scrollTo(0, 0);
+    // Load available sources from settings
+    this.loadAvailableSources();
+    // Listen for source updates
+    window.addEventListener('sources-updated', () => {
+      this.loadAvailableSources();
+    });
     // Auto-search with a default query on load
     this.searchQuery = 'browser extension security';
     this.search();
+  }
+
+  loadAvailableSources() {
+    // For non-admin users, filter sources based on settings
+    // Admin users see all sources but can still be restricted by backend
+    // This is a frontend filter - backend should also enforce this
+    if (!this.isSuperAdmin()) {
+      // In a real implementation, you'd fetch from SettingsService
+      // For now, we'll keep all sources visible but backend will handle filtering
+    }
+  }
+
+  get enabledSources() {
+    return this.availableSources.filter(s => s.enabled !== false);
   }
 
   search() {
@@ -86,10 +108,16 @@ export class AdminPaperFinderComponent implements OnInit {
       return;
     }
 
-    if (this.currentSearchSources.length === 0) {
-      this.toastr.warning('Please select at least one search source');
+    const enabledSourceIds = this.enabledSources.map(s => s.id);
+    const validSources = this.currentSearchSources.filter(id => enabledSourceIds.includes(id));
+    
+    if (validSources.length === 0) {
+      this.toastr.warning('Please select at least one enabled search source');
       return;
     }
+
+    // Update currentSearchSources to only include enabled ones
+    this.currentSearchSources = validSources;
 
     this.searching = true;
     this.papers = [];

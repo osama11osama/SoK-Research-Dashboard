@@ -1,0 +1,93 @@
+<div class="theme-toggle-container relative">
+  <!-- Theme Toggle Button -->
+  <button
+    (click)="toggleThemeMenu()"
+    class="theme-toggle-button relative p-2.5 rounded-lg transition-all border border-slate-300 bg-white shadow-sm hover:shadow-md"
+    type="button"
+    [title]="(currentTheme$ | async) === 'light' ? 'Light Mode' : (currentTheme$ | async) === 'dark' ? 'Dark Mode' : (currentTheme$ | async) === 'dracula' ? 'Dracula Theme' : (currentTheme$ | async) === 'nord' ? 'Nord Theme' : 'Monokai Theme'"
+    [style.background-color]="'var(--button-bg, #ffffff)'"
+    [style.border-color]="'var(--button-border, #cbd5e1)'"
+    [style.color]="'var(--button-icon-color, #475569)'"
+  >
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        *ngIf="(currentTheme$ | async) === 'light'"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+      ></path>
+      <path
+        *ngIf="(currentTheme$ | async) === 'dark'"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+      ></path>
+      <path
+        *ngIf="(currentTheme$ | async) === 'dracula'"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+      ></path>
+      <path
+        *ngIf="(currentTheme$ | async) === 'nord'"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+      ></path>
+      <path
+        *ngIf="(currentTheme$ | async) === 'monokai'"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+      ></path>
+    </svg>
+  </button>
+
+  <!-- Theme Menu Dropdown -->
+  <div
+    *ngIf="showThemeMenu"
+    class="absolute right-0 mt-2 w-64 rounded-xl shadow-2xl z-50 overflow-hidden theme-dropdown"
+    [style.background-color]="'var(--bg-secondary)'"
+    [style.border-color]="'var(--border-color)'"
+    [style.color]="'var(--text-primary)'"
+    style="border: 2px solid;"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="p-2">
+      <div
+        *ngFor="let theme of (availableThemes$ | async)"
+        (click)="setTheme(theme)"
+        [class.theme-item-active]="isThemeActive(theme)"
+        [class.theme-item-inactive]="!isThemeActive(theme)"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer transition-all duration-200 relative"
+        (mouseenter)="onThemeItemMouseEnter($event, theme)"
+        (mouseleave)="onThemeItemMouseLeave($event, theme)"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            [attr.d]="getThemeIcon(theme)"
+          ></path>
+        </svg>
+        <span class="text-sm font-medium">{{ getThemeName(theme) }}</span>
+        <svg
+          *ngIf="isThemeActive(theme)"
+          class="w-5 h-5 ml-auto checkmark-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+

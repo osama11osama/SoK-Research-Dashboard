@@ -65,6 +65,10 @@ export class PaperService {
     return this.http.patch<{ paper: Paper }>(`${this.apiUrl}/papers/${id}`, paper);
   }
 
+  updateReadingStatus(id: string, readingStatus: 'TO_READ' | 'IN_PROGRESS' | 'READ'): Observable<{ paper: Paper }> {
+    return this.http.patch<{ paper: Paper }>(`${this.apiUrl}/papers/${id}/reading-status`, { readingStatus });
+  }
+
   deletePaper(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/papers/${id}`);
   }

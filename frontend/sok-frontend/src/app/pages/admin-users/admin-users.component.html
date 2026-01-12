@@ -56,6 +56,13 @@
         </svg>
         <span>Threat Models</span>
       </a>
+      <a routerLink="/app/admin/settings" routerLinkActive="bg-slate-800 text-blue-400" [routerLinkActiveOptions]="{exact: false}" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-400 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <span>Settings</span>
+      </a>
     </div>
 
     <div class="absolute bottom-10 left-6 right-6">
@@ -72,6 +79,18 @@
   <!-- Main Content -->
   <main class="md:ml-64 p-8">
     <div class="max-w-7xl mx-auto">
+    <header class="flex justify-between items-end mb-8">
+      <div>
+        <h2 class="text-3xl font-bold text-slate-800 mb-2">User Management</h2>
+        <p class="text-slate-500">Manage user accounts, roles, and statuses</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Theme Toggle -->
+        <app-theme-toggle></app-theme-toggle>
+        <!-- Notification Bell -->
+        <app-notification-bell></app-notification-bell>
+      </div>
+    </header>
     <!-- Pending Users -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-8" *ngIf="pendingUsers.length > 0">
       <h2 class="text-xl font-bold text-slate-800 mb-6">Pending Approvals</h2>
@@ -126,6 +145,41 @@
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Source Management -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-8">
+      <h2 class="text-xl font-bold text-slate-800 mb-2">Source Management</h2>
+      <p class="text-sm text-slate-500 mb-6">Control which search sources are available to users in the Paper Finder Tool. Disabled sources will be hidden from all non-admin users.</p>
+      <div class="space-y-3">
+        <div *ngFor="let source of availableSources" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors">
+          <div class="flex items-center gap-4 flex-1">
+            <div class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                 [class]="getSourceBadgeColor(source.name)">
+              <span class="text-xs font-bold">{{ source.name.charAt(0) }}</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-semibold text-slate-800">{{ source.name }}</p>
+              <p class="text-sm text-slate-600">{{ source.description }}</p>
+            </div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              [(ngModel)]="source.enabled"
+              (change)="updateSourceVisibility(source.id)"
+              [disabled]="sourceLoading"
+              class="sr-only peer"
+            />
+            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          </label>
+        </div>
+        <div *ngIf="enabledSourcesCount === 0" class="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+          <p class="text-sm text-amber-800">
+            <strong>Warning:</strong> No search sources are currently enabled. Users will see a message that no sources are available.
+          </p>
         </div>
       </div>
     </div>

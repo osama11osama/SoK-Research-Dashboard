@@ -11,4 +11,1310 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light Theme (Default) */
+:root.light {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-focus-border: #3b82f6;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+  --border-color: #e2e8f0;
+  --accent-primary: #3b82f6;
+  --accent-hover: #2563eb;
+  --button-text: #ffffff;
+  --button-bg: #ffffff;
+  --button-border: #cbd5e1;
+  --button-icon-color: #475569;
+  --button-hover-bg: #f1f5f9;
+  --button-hover-border: #94a3b8;
+  --sidebar-bg: #0f172a;
+  --sidebar-text: #e2e8f0;
+  --sidebar-hover: #1e293b;
+  --accent-success: #10b981;
+  --accent-secondary: #8b5cf6;
+  --bg-hover: #f1f5f9;
+  --bg-warning: #fef3c7;
+  --text-warning: #92400e;
+  --border-warning: #fbbf24;
+  --text-accent: #1e40af;
+  --bg-accent: #dbeafe;
+}
+
+/* Dark Theme */
+:root.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --input-bg: #1e293b;
+  --input-border: #475569;
+  --input-focus-border: #60a5fa;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --border-color: #334155;
+  --accent-primary: #60a5fa;
+  --accent-hover: #3b82f6;
+  --button-text: #ffffff;
+  --button-bg: #1e293b;
+  --button-border: #475569;
+  --button-icon-color: #cbd5e1;
+  --button-hover-bg: #334155;
+  --button-hover-border: #60a5fa;
+  --sidebar-bg: #020617;
+  --sidebar-text: #cbd5e1;
+  --sidebar-hover: #0f172a;
+  --accent-success: #34d399;
+  --accent-secondary: #a78bfa;
+  --bg-hover: #334155;
+  --bg-warning: #78350f;
+  --text-warning: #fbbf24;
+  --border-warning: #f59e0b;
+  --text-accent: #93c5fd;
+  --bg-accent: #1e3a8a;
+}
+
+/* Dracula Theme */
+:root.dracula {
+  --bg-primary: #282a36;
+  --bg-secondary: #44475a;
+  --bg-tertiary: #6272a4;
+  --input-bg: #44475a;
+  --input-border: #6272a4;
+  --input-focus-border: #bd93f9;
+  --text-primary: #f8f8f2;
+  --text-secondary: #bd93f9;
+  --text-tertiary: #6272a4;
+  --border-color: #44475a;
+  --accent-primary: #bd93f9;
+  --accent-hover: #ff79c6;
+  --button-text: #282a36;
+  --button-bg: #44475a;
+  --button-border: #6272a4;
+  --button-icon-color: #f8f8f2;
+  --button-hover-bg: #6272a4;
+  --button-hover-border: #bd93f9;
+  --sidebar-bg: #21222c;
+  --sidebar-text: #f8f8f2;
+  --sidebar-hover: #282a36;
+  --accent-success: #50fa7b;
+  --accent-secondary: #ff79c6;
+  --bg-hover: #6272a4;
+  --bg-warning: #44475a;
+  --text-warning: #ffb86c;
+  --border-warning: #ff79c6;
+  --text-accent: #bd93f9;
+  --bg-accent: #44475a;
+}
+
+/* Nord Theme */
+:root.nord {
+  --bg-primary: #2e3440;
+  --bg-secondary: #3b4252;
+  --bg-tertiary: #434c5e;
+  --input-bg: #3b4252;
+  --input-border: #4c566a;
+  --input-focus-border: #88c0d0;
+  --text-primary: #eceff4;
+  --text-secondary: #e5e9f0;
+  --text-tertiary: #d8dee9;
+  --border-color: #4c566a;
+  --accent-primary: #88c0d0;
+  --accent-hover: #5e81ac;
+  --button-text: #2e3440;
+  --button-bg: #3b4252;
+  --button-border: #4c566a;
+  --button-icon-color: #eceff4;
+  --button-hover-bg: #434c5e;
+  --button-hover-border: #88c0d0;
+  --sidebar-bg: #2e3440;
+  --sidebar-text: #eceff4;
+  --sidebar-hover: #3b4252;
+  --accent-success: #a3be8c;
+  --accent-secondary: #b48ead;
+  --bg-hover: #434c5e;
+  --bg-warning: #4c566a;
+  --text-warning: #ebcb8b;
+  --border-warning: #d08770;
+  --text-accent: #88c0d0;
+  --bg-accent: #3b4252;
+}
+
+/* Monokai Theme */
+:root.monokai {
+  --bg-primary: #272822;
+  --bg-secondary: #3e3d32;
+  --bg-tertiary: #49483e;
+  --input-bg: #3e3d32;
+  --input-border: #49483e;
+  --input-focus-border: #a6e22e;
+  --text-primary: #f8f8f2;
+  --text-secondary: #f92672;
+  --text-tertiary: #75715e;
+  --border-color: #49483e;
+  --accent-primary: #a6e22e;
+  --accent-hover: #66d9ef;
+  --button-text: #272822;
+  --button-bg: #3e3d32;
+  --button-border: #49483e;
+  --button-icon-color: #f8f8f2;
+  --button-hover-bg: #49483e;
+  --button-hover-border: #a6e22e;
+  --sidebar-bg: #1e1f1c;
+  --sidebar-text: #f8f8f2;
+  --sidebar-hover: #272822;
+  --accent-success: #a6e22e;
+  --accent-secondary: #f92672;
+  --bg-hover: #49483e;
+  --bg-warning: #49483e;
+  --text-warning: #fd971f;
+  --border-warning: #e6db74;
+  --text-accent: #66d9ef;
+  --bg-accent: #49483e;
+}
+
+/* Apply theme variables globally - only for non-light themes */
+:root.dark html,
+:root.dracula html,
+:root.nord html,
+:root.monokai html,
+:root.dark body,
+:root.dracula body,
+:root.nord body,
+:root.monokai body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme overrides - only apply to non-light themes */
+/* Background colors */
+:root.dark .bg-slate-50,
+:root.dracula .bg-slate-50,
+:root.nord .bg-slate-50,
+:root.monokai .bg-slate-50,
+:root.dark .bg-white,
+:root.dracula .bg-white,
+:root.nord .bg-white,
+:root.monokai .bg-white,
+:root.dark .bg-slate-100,
+:root.dracula .bg-slate-100,
+:root.nord .bg-slate-100,
+:root.monokai .bg-slate-100,
+:root.dark .bg-slate-200,
+:root.dracula .bg-slate-200,
+:root.nord .bg-slate-200,
+:root.monokai .bg-slate-200,
+:root.dark [class*="bg-white"],
+:root.dracula [class*="bg-white"],
+:root.nord [class*="bg-white"],
+:root.monokai [class*="bg-white"],
+:root.dark [class*="bg-slate-50"],
+:root.dracula [class*="bg-slate-50"],
+:root.nord [class*="bg-slate-50"],
+:root.monokai [class*="bg-slate-50"],
+:root.dark [class*="bg-slate-100"],
+:root.dracula [class*="bg-slate-100"],
+:root.nord [class*="bg-slate-100"],
+:root.monokai [class*="bg-slate-100"] {
+  background-color: var(--bg-secondary) !important;
+}
+
+:root.dark .bg-slate-900,
+:root.dracula .bg-slate-900,
+:root.nord .bg-slate-900,
+:root.monokai .bg-slate-900,
+:root.dark [class*="bg-slate-900"],
+:root.dracula [class*="bg-slate-900"],
+:root.nord [class*="bg-slate-900"],
+:root.monokai [class*="bg-slate-900"] {
+  background-color: var(--sidebar-bg) !important;
+}
+
+:root.dark .bg-slate-800,
+:root.dracula .bg-slate-800,
+:root.nord .bg-slate-800,
+:root.monokai .bg-slate-800,
+:root.dark [class*="bg-slate-800"],
+:root.dracula [class*="bg-slate-800"],
+:root.nord [class*="bg-slate-800"],
+:root.monokai [class*="bg-slate-800"] {
+  background-color: var(--sidebar-hover) !important;
+}
+
+:root.dark .bg-slate-700,
+:root.dracula .bg-slate-700,
+:root.nord .bg-slate-700,
+:root.monokai .bg-slate-700,
+:root.dark [class*="bg-slate-700"],
+:root.dracula [class*="bg-slate-700"],
+:root.nord [class*="bg-slate-700"],
+:root.monokai [class*="bg-slate-700"] {
+  background-color: var(--border-color) !important;
+}
+
+/* Text colors */
+:root.dark .text-slate-800,
+:root.dracula .text-slate-800,
+:root.nord .text-slate-800,
+:root.monokai .text-slate-800,
+:root.dark .text-slate-900,
+:root.dracula .text-slate-900,
+:root.nord .text-slate-900,
+:root.monokai .text-slate-900,
+:root.dark .text-slate-700,
+:root.dracula .text-slate-700,
+:root.nord .text-slate-700,
+:root.monokai .text-slate-700,
+:root.dark [class*="text-slate-800"],
+:root.dracula [class*="text-slate-800"],
+:root.nord [class*="text-slate-800"],
+:root.monokai [class*="text-slate-800"],
+:root.dark [class*="text-slate-900"],
+:root.dracula [class*="text-slate-900"],
+:root.nord [class*="text-slate-900"],
+:root.monokai [class*="text-slate-900"],
+:root.dark [class*="text-slate-700"],
+:root.dracula [class*="text-slate-700"],
+:root.nord [class*="text-slate-700"],
+:root.monokai [class*="text-slate-700"] {
+  color: var(--text-primary) !important;
+}
+
+:root.dark .text-slate-500,
+:root.dracula .text-slate-500,
+:root.nord .text-slate-500,
+:root.monokai .text-slate-500,
+:root.dark .text-slate-600,
+:root.dracula .text-slate-600,
+:root.nord .text-slate-600,
+:root.monokai .text-slate-600,
+:root.dark [class*="text-slate-500"],
+:root.dracula [class*="text-slate-500"],
+:root.nord [class*="text-slate-500"],
+:root.monokai [class*="text-slate-500"],
+:root.dark [class*="text-slate-600"],
+:root.dracula [class*="text-slate-600"],
+:root.nord [class*="text-slate-600"],
+:root.monokai [class*="text-slate-600"] {
+  color: var(--text-secondary) !important;
+}
+
+:root.dark .text-slate-400,
+:root.dracula .text-slate-400,
+:root.nord .text-slate-400,
+:root.monokai .text-slate-400,
+:root.dark .text-slate-300,
+:root.dracula .text-slate-300,
+:root.nord .text-slate-300,
+:root.monokai .text-slate-300,
+:root.dark [class*="text-slate-400"],
+:root.dracula [class*="text-slate-400"],
+:root.nord [class*="text-slate-400"],
+:root.monokai [class*="text-slate-400"],
+:root.dark [class*="text-slate-300"],
+:root.dracula [class*="text-slate-300"],
+:root.nord [class*="text-slate-300"],
+:root.monokai [class*="text-slate-300"] {
+  color: var(--text-tertiary) !important;
+}
+
+/* Border colors */
+:root.dark .border-slate-200,
+:root.dracula .border-slate-200,
+:root.nord .border-slate-200,
+:root.monokai .border-slate-200,
+:root.dark .border-slate-300,
+:root.dracula .border-slate-300,
+:root.nord .border-slate-300,
+:root.monokai .border-slate-300,
+:root.dark .border-slate-700,
+:root.dracula .border-slate-700,
+:root.nord .border-slate-700,
+:root.monokai .border-slate-700,
+:root.dark [class*="border-slate-200"],
+:root.dracula [class*="border-slate-200"],
+:root.nord [class*="border-slate-200"],
+:root.monokai [class*="border-slate-200"],
+:root.dark [class*="border-slate-300"],
+:root.dracula [class*="border-slate-300"],
+:root.nord [class*="border-slate-300"],
+:root.monokai [class*="border-slate-300"],
+:root.dark [class*="border-slate-700"],
+:root.dracula [class*="border-slate-700"],
+:root.nord [class*="border-slate-700"],
+:root.monokai [class*="border-slate-700"] {
+  border-color: var(--border-color) !important;
+}
+
+/* Sidebar specific overrides - only for non-light themes */
+:root.dark nav.bg-slate-900,
+:root.dracula nav.bg-slate-900,
+:root.nord nav.bg-slate-900,
+:root.monokai nav.bg-slate-900,
+:root.dark nav[class*="bg-slate-900"],
+:root.dracula nav[class*="bg-slate-900"],
+:root.nord nav[class*="bg-slate-900"],
+:root.monokai nav[class*="bg-slate-900"] {
+  background-color: var(--sidebar-bg) !important;
+}
+
+:root.dark nav .text-slate-400,
+:root.dracula nav .text-slate-400,
+:root.nord nav .text-slate-400,
+:root.monokai nav .text-slate-400,
+:root.dark nav .text-slate-500,
+:root.dracula nav .text-slate-500,
+:root.nord nav .text-slate-500,
+:root.monokai nav .text-slate-500,
+:root.dark nav[class*="text-slate-400"],
+:root.dracula nav[class*="text-slate-400"],
+:root.nord nav[class*="text-slate-400"],
+:root.monokai nav[class*="text-slate-400"],
+:root.dark nav[class*="text-slate-500"],
+:root.dracula nav[class*="text-slate-500"],
+:root.nord nav[class*="text-slate-500"],
+:root.monokai nav[class*="text-slate-500"] {
+  color: var(--sidebar-text) !important;
+}
+
+:root.dark nav .hover\:bg-slate-800:hover,
+:root.dracula nav .hover\:bg-slate-800:hover,
+:root.nord nav .hover\:bg-slate-800:hover,
+:root.monokai nav .hover\:bg-slate-800:hover,
+:root.dark nav .bg-slate-800,
+:root.dracula nav .bg-slate-800,
+:root.nord nav .bg-slate-800,
+:root.monokai nav .bg-slate-800,
+:root.dark nav[class*="hover:bg-slate-800"]:hover,
+:root.dracula nav[class*="hover:bg-slate-800"]:hover,
+:root.nord nav[class*="hover:bg-slate-800"]:hover,
+:root.monokai nav[class*="hover:bg-slate-800"]:hover,
+:root.dark nav[class*="bg-slate-800"],
+:root.dracula nav[class*="bg-slate-800"],
+:root.nord nav[class*="bg-slate-800"],
+:root.monokai nav[class*="bg-slate-800"] {
+  background-color: var(--sidebar-hover) !important;
+}
+
+:root.dark nav .text-blue-400,
+:root.dracula nav .text-blue-400,
+:root.nord nav .text-blue-400,
+:root.monokai nav .text-blue-400,
+:root.dark nav[class*="text-blue-400"],
+:root.dracula nav[class*="text-blue-400"],
+:root.nord nav[class*="text-blue-400"],
+:root.monokai nav[class*="text-blue-400"] {
+  color: var(--accent-primary) !important;
+}
+
+/* Main content area - only for non-light themes */
+:root.dark main,
+:root.dracula main,
+:root.nord main,
+:root.monokai main {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Cards, containers, and paper items - only for non-light themes */
+:root.dark .bg-white,
+:root.dracula .bg-white,
+:root.nord .bg-white,
+:root.monokai .bg-white,
+:root.dark [class*="bg-white"],
+:root.dracula [class*="bg-white"],
+:root.nord [class*="bg-white"],
+:root.monokai [class*="bg-white"] {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Dropdown menus - ensure they stand out - only for non-light themes */
+:root.dark .absolute.right-0.mt-2,
+:root.dracula .absolute.right-0.mt-2,
+:root.nord .absolute.right-0.mt-2,
+:root.monokai .absolute.right-0.mt-2,
+:root.dark [class*="absolute"][class*="right-0"],
+:root.dracula [class*="absolute"][class*="right-0"],
+:root.nord [class*="absolute"][class*="right-0"],
+:root.monokai [class*="absolute"][class*="right-0"] {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Dropdown menu items - only for non-light themes */
+:root.dark .border-slate-100,
+:root.dracula .border-slate-100,
+:root.nord .border-slate-100,
+:root.monokai .border-slate-100,
+:root.dark [class*="border-slate-100"],
+:root.dracula [class*="border-slate-100"],
+:root.nord [class*="border-slate-100"],
+:root.monokai [class*="border-slate-100"] {
+  border-color: var(--border-color) !important;
+}
+
+/* Hover states - only for non-light themes */
+:root.dark .hover\:bg-slate-50:hover,
+:root.dracula .hover\:bg-slate-50:hover,
+:root.nord .hover\:bg-slate-50:hover,
+:root.monokai .hover\:bg-slate-50:hover,
+:root.dark [class*="hover:bg-slate-50"]:hover,
+:root.dracula [class*="hover:bg-slate-50"]:hover,
+:root.nord [class*="hover:bg-slate-50"]:hover,
+:root.monokai [class*="hover:bg-slate-50"]:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+:root.dark .hover\:bg-slate-100:hover,
+:root.dracula .hover\:bg-slate-100:hover,
+:root.nord .hover\:bg-slate-100:hover,
+:root.monokai .hover\:bg-slate-100:hover,
+:root.dark [class*="hover:bg-slate-100"]:hover,
+:root.dracula [class*="hover:bg-slate-100"]:hover,
+:root.nord [class*="hover:bg-slate-100"]:hover,
+:root.monokai [class*="hover:bg-slate-100"]:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+/* Input fields - distinct colors for editable fields - only for non-light themes */
+:root.dark input[type="text"],
+:root.dracula input[type="text"],
+:root.nord input[type="text"],
+:root.monokai input[type="text"],
+:root.dark input[type="number"],
+:root.dracula input[type="number"],
+:root.nord input[type="number"],
+:root.monokai input[type="number"],
+:root.dark input[type="url"],
+:root.dracula input[type="url"],
+:root.nord input[type="url"],
+:root.monokai input[type="url"],
+:root.dark input[type="password"],
+:root.dracula input[type="password"],
+:root.nord input[type="password"],
+:root.monokai input[type="password"],
+:root.dark input[type="email"],
+:root.dracula input[type="email"],
+:root.nord input[type="email"],
+:root.monokai input[type="email"],
+:root.dark input[type="search"],
+:root.dracula input[type="search"],
+:root.nord input[type="search"],
+:root.monokai input[type="search"],
+:root.dark textarea,
+:root.dracula textarea,
+:root.nord textarea,
+:root.monokai textarea,
+:root.dark select,
+:root.dracula select,
+:root.nord select,
+:root.monokai select {
+  background-color: var(--input-bg, var(--bg-secondary)) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--input-border, var(--border-color)) !important;
+  border-width: 1px;
+  border-style: solid;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+:root.dark input[type="text"]:focus,
+:root.dracula input[type="text"]:focus,
+:root.nord input[type="text"]:focus,
+:root.monokai input[type="text"]:focus,
+:root.dark input[type="number"]:focus,
+:root.dracula input[type="number"]:focus,
+:root.nord input[type="number"]:focus,
+:root.monokai input[type="number"]:focus,
+:root.dark input[type="url"]:focus,
+:root.dracula input[type="url"]:focus,
+:root.nord input[type="url"]:focus,
+:root.monokai input[type="url"]:focus,
+:root.dark input[type="password"]:focus,
+:root.dracula input[type="password"]:focus,
+:root.nord input[type="password"]:focus,
+:root.monokai input[type="password"]:focus,
+:root.dark input[type="email"]:focus,
+:root.dracula input[type="email"]:focus,
+:root.nord input[type="email"]:focus,
+:root.monokai input[type="email"]:focus,
+:root.dark input[type="search"]:focus,
+:root.dracula input[type="search"]:focus,
+:root.nord input[type="search"]:focus,
+:root.monokai input[type="search"]:focus,
+:root.dark textarea:focus,
+:root.dracula textarea:focus,
+:root.nord textarea:focus,
+:root.monokai textarea:focus,
+:root.dark select:focus,
+:root.dracula select:focus,
+:root.nord select:focus,
+:root.monokai select:focus {
+  outline: none !important;
+  border-color: var(--input-focus-border, var(--accent-primary)) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+:root.dark input[type="text"]::placeholder,
+:root.dracula input[type="text"]::placeholder,
+:root.nord input[type="text"]::placeholder,
+:root.monokai input[type="text"]::placeholder,
+:root.dark input[type="number"]::placeholder,
+:root.dracula input[type="number"]::placeholder,
+:root.nord input[type="number"]::placeholder,
+:root.monokai input[type="number"]::placeholder,
+:root.dark input[type="url"]::placeholder,
+:root.dracula input[type="url"]::placeholder,
+:root.nord input[type="url"]::placeholder,
+:root.monokai input[type="url"]::placeholder,
+:root.dark input[type="password"]::placeholder,
+:root.dracula input[type="password"]::placeholder,
+:root.nord input[type="password"]::placeholder,
+:root.monokai input[type="password"]::placeholder,
+:root.dark input[type="email"]::placeholder,
+:root.dracula input[type="email"]::placeholder,
+:root.nord input[type="email"]::placeholder,
+:root.monokai input[type="email"]::placeholder,
+:root.dark input[type="search"]::placeholder,
+:root.dracula input[type="search"]::placeholder,
+:root.nord input[type="search"]::placeholder,
+:root.monokai input[type="search"]::placeholder,
+:root.dark textarea::placeholder,
+:root.dracula textarea::placeholder,
+:root.nord textarea::placeholder,
+:root.monokai textarea::placeholder {
+  color: var(--text-tertiary) !important;
+  opacity: 0.7;
+}
+
+/* Modals, dropdowns, and overlays - only for non-light themes */
+:root.dark [class*="modal"],
+:root.dracula [class*="modal"],
+:root.nord [class*="modal"],
+:root.monokai [class*="modal"],
+:root.dark [class*="dropdown"],
+:root.dracula [class*="dropdown"],
+:root.nord [class*="dropdown"],
+:root.monokai [class*="dropdown"],
+:root.dark [class*="overlay"],
+:root.dracula [class*="overlay"],
+:root.nord [class*="overlay"],
+:root.monokai [class*="overlay"] {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Backdrop overlays */
+.fixed.inset-0.bg-slate-900 {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Cards, boxes, and containers with rounded corners - only for non-light themes */
+:root.dark .rounded-2xl,
+:root.dracula .rounded-2xl,
+:root.nord .rounded-2xl,
+:root.monokai .rounded-2xl,
+:root.dark .rounded-lg,
+:root.dracula .rounded-lg,
+:root.nord .rounded-lg,
+:root.monokai .rounded-lg,
+:root.dark .rounded-md,
+:root.dracula .rounded-md,
+:root.nord .rounded-md,
+:root.monokai .rounded-md,
+:root.dark [class*="rounded"],
+:root.dracula [class*="rounded"],
+:root.nord [class*="rounded"],
+:root.monokai [class*="rounded"] {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Gradient backgrounds - only for non-light themes */
+:root.dark .bg-gradient-to-r,
+:root.dracula .bg-gradient-to-r,
+:root.nord .bg-gradient-to-r,
+:root.monokai .bg-gradient-to-r {
+  background: linear-gradient(to right, var(--bg-secondary), var(--bg-tertiary)) !important;
+}
+
+:root.dark .from-slate-50,
+:root.dracula .from-slate-50,
+:root.nord .from-slate-50,
+:root.monokai .from-slate-50,
+:root.dark .to-blue-50,
+:root.dracula .to-blue-50,
+:root.nord .to-blue-50,
+:root.monokai .to-blue-50 {
+  background: linear-gradient(to right, var(--bg-secondary), var(--accent-primary)) !important;
+}
+
+/* All divs with min-h-screen should use theme background - only for non-light themes */
+:root.dark .min-h-screen,
+:root.dracula .min-h-screen,
+:root.nord .min-h-screen,
+:root.monokai .min-h-screen {
+  background-color: var(--bg-primary) !important;
+}
+
+/* Paper cards and list items - only for non-light themes */
+:root.dark .group,
+:root.dracula .group,
+:root.nord .group,
+:root.monokai .group,
+:root.dark [class*="group"],
+:root.dracula [class*="group"],
+:root.nord [class*="group"],
+:root.monokai [class*="group"] {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Stats cards */
+.border-l-4 {
+  border-left-color: var(--border-color) !important;
+}
+
+.border-l-green-500 {
+  border-left-color: #10b981 !important;
+}
+
+.border-l-amber-500 {
+  border-left-color: #f59e0b !important;
+}
+
+/* Buttons - redesigned for each theme with good visibility */
+
+/* Light Theme Buttons */
+:root.light button.bg-blue-600,
+:root.light button.bg-blue-700,
+:root.light [class*="bg-blue-600"],
+:root.light [class*="bg-blue-700"] {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2) !important;
+}
+
+:root.light button.bg-blue-600:hover,
+:root.light button.bg-blue-700:hover,
+:root.light [class*="bg-blue-600"]:hover,
+:root.light [class*="bg-blue-700"]:hover {
+  background-color: #2563eb !important;
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Dark Theme Buttons */
+:root.dark button.bg-blue-600,
+:root.dark button.bg-blue-700,
+:root.dark [class*="bg-blue-600"],
+:root.dark [class*="bg-blue-700"] {
+  background-color: #60a5fa !important;
+  color: #0f172a !important;
+  border: none !important;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(96, 165, 250, 0.3) !important;
+}
+
+:root.dark button.bg-blue-600:hover,
+:root.dark button.bg-blue-700:hover,
+:root.dark [class*="bg-blue-600"]:hover,
+:root.dark [class*="bg-blue-700"]:hover {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 8px rgba(96, 165, 250, 0.4) !important;
+}
+
+/* Dracula Theme Buttons */
+:root.dracula button.bg-blue-600,
+:root.dracula button.bg-blue-700,
+:root.dracula [class*="bg-blue-600"],
+:root.dracula [class*="bg-blue-700"] {
+  background-color: #bd93f9 !important;
+  color: #282a36 !important;
+  border: none !important;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(189, 147, 249, 0.3) !important;
+}
+
+:root.dracula button.bg-blue-600:hover,
+:root.dracula button.bg-blue-700:hover,
+:root.dracula [class*="bg-blue-600"]:hover,
+:root.dracula [class*="bg-blue-700"]:hover {
+  background-color: #ff79c6 !important;
+  color: #282a36 !important;
+  box-shadow: 0 4px 8px rgba(255, 121, 198, 0.4) !important;
+}
+
+/* Nord Theme Buttons */
+:root.nord button.bg-blue-600,
+:root.nord button.bg-blue-700,
+:root.nord [class*="bg-blue-600"],
+:root.nord [class*="bg-blue-700"] {
+  background-color: #88c0d0 !important;
+  color: #2e3440 !important;
+  border: none !important;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(136, 192, 208, 0.3) !important;
+}
+
+:root.nord button.bg-blue-600:hover,
+:root.nord button.bg-blue-700:hover,
+:root.nord [class*="bg-blue-600"]:hover,
+:root.nord [class*="bg-blue-700"]:hover {
+  background-color: #5e81ac !important;
+  color: #eceff4 !important;
+  box-shadow: 0 4px 8px rgba(94, 129, 172, 0.4) !important;
+}
+
+/* Monokai Theme Buttons */
+:root.monokai button.bg-blue-600,
+:root.monokai button.bg-blue-700,
+:root.monokai [class*="bg-blue-600"],
+:root.monokai [class*="bg-blue-700"] {
+  background-color: #a6e22e !important;
+  color: #272822 !important;
+  border: none !important;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(166, 226, 46, 0.3) !important;
+}
+
+:root.monokai button.bg-blue-600:hover,
+:root.monokai button.bg-blue-700:hover,
+:root.monokai [class*="bg-blue-600"]:hover,
+:root.monokai [class*="bg-blue-700"]:hover {
+  background-color: #66d9ef !important;
+  color: #272822 !important;
+  box-shadow: 0 4px 8px rgba(102, 217, 239, 0.4) !important;
+}
+
+/* Green Buttons - All Themes */
+:root.light button.bg-green-600,
+:root.light button.bg-green-700,
+:root.light [class*="bg-green-600"],
+:root.light [class*="bg-green-700"] {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2) !important;
+}
+
+:root.light button.bg-green-600:hover,
+:root.light button.bg-green-700:hover,
+:root.light [class*="bg-green-600"]:hover,
+:root.light [class*="bg-green-700"]:hover {
+  background-color: #059669 !important;
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3) !important;
+}
+
+:root.dark button.bg-green-600,
+:root.dark button.bg-green-700,
+:root.dark [class*="bg-green-600"],
+:root.dark [class*="bg-green-700"],
+:root.dracula button.bg-green-600,
+:root.dracula button.bg-green-700,
+:root.dracula [class*="bg-green-600"],
+:root.dracula [class*="bg-green-700"],
+:root.nord button.bg-green-600,
+:root.nord button.bg-green-700,
+:root.nord [class*="bg-green-600"],
+:root.nord [class*="bg-green-700"],
+:root.monokai button.bg-green-600,
+:root.monokai button.bg-green-700,
+:root.monokai [class*="bg-green-600"],
+:root.monokai [class*="bg-green-700"] {
+  background-color: #34d399 !important;
+  color: #0f172a !important;
+  border: none !important;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(52, 211, 153, 0.3) !important;
+}
+
+:root.dark button.bg-green-600:hover,
+:root.dark button.bg-green-700:hover,
+:root.dark [class*="bg-green-600"]:hover,
+:root.dark [class*="bg-green-700"]:hover,
+:root.dracula button.bg-green-600:hover,
+:root.dracula button.bg-green-700:hover,
+:root.dracula [class*="bg-green-600"]:hover,
+:root.dracula [class*="bg-green-700"]:hover,
+:root.nord button.bg-green-600:hover,
+:root.nord button.bg-green-700:hover,
+:root.nord [class*="bg-green-600"]:hover,
+:root.nord [class*="bg-green-700"]:hover,
+:root.monokai button.bg-green-600:hover,
+:root.monokai button.bg-green-700:hover,
+:root.monokai [class*="bg-green-600"]:hover,
+:root.monokai [class*="bg-green-700"]:hover {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 8px rgba(52, 211, 153, 0.4) !important;
+}
+
+/* Red Buttons - All Themes */
+:root.light button.bg-red-600,
+:root.light button.bg-red-700,
+:root.light [class*="bg-red-600"],
+:root.light [class*="bg-red-700"] {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2) !important;
+}
+
+:root.light button.bg-red-600:hover,
+:root.light button.bg-red-700:hover,
+:root.light [class*="bg-red-600"]:hover,
+:root.light [class*="bg-red-700"]:hover {
+  background-color: #dc2626 !important;
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3) !important;
+}
+
+:root.dark button.bg-red-600,
+:root.dark button.bg-red-700,
+:root.dark [class*="bg-red-600"],
+:root.dark [class*="bg-red-700"],
+:root.dracula button.bg-red-600,
+:root.dracula button.bg-red-700,
+:root.dracula [class*="bg-red-600"],
+:root.dracula [class*="bg-red-700"],
+:root.nord button.bg-red-600,
+:root.nord button.bg-red-700,
+:root.nord [class*="bg-red-600"],
+:root.nord [class*="bg-red-700"],
+:root.monokai button.bg-red-600,
+:root.monokai button.bg-red-700,
+:root.monokai [class*="bg-red-600"],
+:root.monokai [class*="bg-red-700"] {
+  background-color: #f87171 !important;
+  color: #0f172a !important;
+  border: none !important;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(248, 113, 113, 0.3) !important;
+}
+
+:root.dark button.bg-red-600:hover,
+:root.dark button.bg-red-700:hover,
+:root.dark [class*="bg-red-600"]:hover,
+:root.dark [class*="bg-red-700"]:hover,
+:root.dracula button.bg-red-600:hover,
+:root.dracula button.bg-red-700:hover,
+:root.dracula [class*="bg-red-600"]:hover,
+:root.dracula [class*="bg-red-700"]:hover,
+:root.nord button.bg-red-600:hover,
+:root.nord button.bg-red-700:hover,
+:root.nord [class*="bg-red-600"]:hover,
+:root.nord [class*="bg-red-700"]:hover,
+:root.monokai button.bg-red-600:hover,
+:root.monokai button.bg-red-700:hover,
+:root.monokai [class*="bg-red-600"]:hover,
+:root.monokai [class*="bg-red-700"]:hover {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 8px rgba(248, 113, 113, 0.4) !important;
+}
+
+/* White text on buttons - ensure visibility */
+button.text-white,
+[class*="text-white"] {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Universal Pill Styling for Source Labels */
+.source-label,
+span[class*="bg-blue-50"],
+span[class*="bg-blue-100"],
+span[class*="bg-green-50"],
+span[class*="bg-green-100"],
+span[class*="bg-orange-50"],
+span[class*="bg-orange-100"],
+span[class*="bg-purple-50"],
+span[class*="bg-purple-100"],
+span[class*="bg-indigo-50"],
+span[class*="bg-indigo-100"],
+span[class*="bg-yellow-50"],
+span[class*="bg-yellow-100"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.25rem 0.75rem !important;
+  border-radius: 9999px !important; /* Pill shape */
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  margin-right: 0.5rem !important;
+  margin-bottom: 0.25rem !important;
+  transition: all 0.2s ease-in-out !important;
+  border: none !important;
+  white-space: nowrap !important;
+}
+
+/* Hover effect for interactive labels */
+.source-label:hover,
+span[class*="bg-blue-50"]:hover,
+span[class*="bg-blue-100"]:hover,
+span[class*="bg-green-50"]:hover,
+span[class*="bg-green-100"]:hover,
+span[class*="bg-orange-50"]:hover,
+span[class*="bg-orange-100"]:hover,
+span[class*="bg-purple-50"]:hover,
+span[class*="bg-purple-100"]:hover,
+span[class*="bg-indigo-50"]:hover,
+span[class*="bg-indigo-100"]:hover,
+span[class*="bg-yellow-50"]:hover,
+span[class*="bg-yellow-100"]:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  cursor: default !important;
+}
+
+/* Focus ring for accessibility */
+.source-label:focus-visible,
+span[class*="bg-blue-50"]:focus-visible,
+span[class*="bg-blue-100"]:focus-visible {
+  outline: 2px solid var(--accent-primary, #3b82f6) !important;
+  outline-offset: 2px !important;
+}
+
+/* Labels/Badges - keep same colors in all themes for consistency */
+/* Force colored backgrounds for badges in ALL themes */
+span[class*="bg-blue-50"],
+span[class*="bg-blue-100"],
+.bg-blue-50,
+[class*="bg-blue-50"],
+.bg-blue-100,
+[class*="bg-blue-100"] {
+  background-color: #dbeafe !important;
+}
+
+span[class*="text-blue-800"],
+span[class*="text-blue-700"],
+.text-blue-800,
+[class*="text-blue-800"],
+.text-blue-700,
+[class*="text-blue-700"] {
+  color: #1e40af !important;
+}
+
+/* Green badges (OpenAlex) */
+span[class*="bg-green-50"],
+span[class*="bg-green-100"],
+.bg-green-50,
+[class*="bg-green-50"],
+.bg-green-100,
+[class*="bg-green-100"] {
+  background-color: #dcfce7 !important;
+}
+
+span[class*="text-green-800"],
+span[class*="text-green-700"],
+.text-green-800,
+[class*="text-green-800"],
+.text-green-700,
+[class*="text-green-700"] {
+  color: #166534 !important;
+}
+
+/* Orange badges (arXiv) */
+span[class*="bg-orange-50"],
+span[class*="bg-orange-100"],
+.bg-orange-50,
+[class*="bg-orange-50"],
+.bg-orange-100,
+[class*="bg-orange-100"] {
+  background-color: #ffedd5 !important;
+}
+
+span[class*="text-orange-800"],
+span[class*="text-orange-700"],
+.text-orange-800,
+[class*="text-orange-800"],
+.text-orange-700,
+[class*="text-orange-700"] {
+  color: #9a3412 !important;
+}
+
+/* Purple badges (Semantic Scholar, influential) */
+span[class*="bg-purple-50"],
+span[class*="bg-purple-100"],
+.bg-purple-50,
+[class*="bg-purple-50"],
+.bg-purple-100,
+[class*="bg-purple-100"] {
+  background-color: #f3e8ff !important;
+}
+
+span[class*="text-purple-800"],
+span[class*="text-purple-700"],
+.text-purple-800,
+[class*="text-purple-800"],
+.text-purple-700,
+[class*="text-purple-700"] {
+  color: #6b21a8 !important;
+}
+
+/* Indigo badges (Crossref) */
+span[class*="bg-indigo-50"],
+span[class*="bg-indigo-100"],
+.bg-indigo-50,
+[class*="bg-indigo-50"],
+.bg-indigo-100,
+[class*="bg-indigo-100"] {
+  background-color: #e0e7ff !important;
+}
+
+span[class*="text-indigo-800"],
+span[class*="text-indigo-700"],
+.text-indigo-800,
+[class*="text-indigo-800"],
+.text-indigo-700,
+[class*="text-indigo-700"] {
+  color: #3730a3 !important;
+}
+
+/* Yellow badges (Found in X sources) */
+span[class*="bg-yellow-50"],
+span[class*="bg-yellow-100"],
+.bg-yellow-50,
+[class*="bg-yellow-50"],
+.bg-yellow-100,
+[class*="bg-yellow-100"] {
+  background-color: #fef9c3 !important;
+}
+
+span[class*="text-yellow-800"],
+span[class*="text-yellow-700"],
+.text-yellow-800,
+[class*="text-yellow-800"],
+.text-yellow-700,
+[class*="text-yellow-700"] {
+  color: #854d0e !important;
+}
+
+/* Slate badges (default) */
+span[class*="bg-slate-100"],
+.bg-slate-100,
+[class*="bg-slate-100"] {
+  background-color: #f1f5f9 !important;
+}
+
+span[class*="text-slate-800"],
+span[class*="text-slate-700"],
+.text-slate-800,
+[class*="text-slate-800"],
+.text-slate-700,
+[class*="text-slate-700"] {
+  color: #1e293b !important;
+}
+
+/* Notification Bell and Theme Toggle Buttons - Enhanced visibility */
+.notification-bell-button,
+.theme-toggle-button {
+  background-color: var(--button-bg, #ffffff) !important;
+  border: 1px solid var(--button-border, #cbd5e1) !important;
+  color: var(--button-icon-color, #475569) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.notification-bell-button:hover,
+.theme-toggle-button:hover {
+  background-color: var(--button-hover-bg, #f1f5f9) !important;
+  border-color: var(--button-hover-border, #94a3b8) !important;
+  color: var(--button-icon-color, #475569) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-1px);
+}
+
+.notification-bell-button svg,
+.theme-toggle-button svg {
+  color: var(--button-icon-color, #475569) !important;
+  stroke-width: 2;
+}
+
+.notification-bell-button:hover svg,
+.theme-toggle-button:hover svg {
+  color: var(--accent-primary, #3b82f6) !important;
+}
+
+/* Light mode specific enhancements */
+:root.light .notification-bell-button,
+:root.light .theme-toggle-button {
+  background-color: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  color: #475569 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+:root.light .notification-bell-button:hover,
+:root.light .theme-toggle-button:hover {
+  background-color: #f8fafc !important;
+  border-color: #3b82f6 !important;
+  color: #3b82f6 !important;
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2) !important;
+}
+
+:root.light .notification-bell-button svg,
+:root.light .theme-toggle-button svg {
+  color: #475569 !important;
+}
+
+:root.light .notification-bell-button:hover svg,
+:root.light .theme-toggle-button:hover svg {
+  color: #3b82f6 !important;
+}
+
+/* Links - only for non-light themes */
+:root.dark a,
+:root.dracula a,
+:root.nord a,
+:root.monokai a {
+  color: var(--text-primary) !important;
+}
+
+:root.dark a:hover,
+:root.dracula a:hover,
+:root.nord a:hover,
+:root.monokai a:hover {
+  color: var(--accent-primary) !important;
+}
+
+/* Icon colors in dropdowns and buttons - ensure visibility - only for non-light themes */
+:root.dark .text-blue-600,
+:root.dracula .text-blue-600,
+:root.nord .text-blue-600,
+:root.monokai .text-blue-600,
+:root.dark [class*="text-blue-600"],
+:root.dracula [class*="text-blue-600"],
+:root.nord [class*="text-blue-600"],
+:root.monokai [class*="text-blue-600"] {
+  color: var(--accent-primary) !important;
+}
+
+.text-green-600,
+[class*="text-green-600"] {
+  color: #10b981 !important;
+}
+
+.text-purple-600,
+[class*="text-purple-600"] {
+  color: #9333ea !important;
+}
+
+/* Ensure dropdown text is visible - only for non-light themes */
+:root.dark .absolute button,
+:root.dracula .absolute button,
+:root.nord .absolute button,
+:root.monokai .absolute button,
+:root.dark .absolute a,
+:root.dracula .absolute a,
+:root.nord .absolute a,
+:root.monokai .absolute a,
+:root.dark [class*="absolute"] button,
+:root.dracula [class*="absolute"] button,
+:root.nord [class*="absolute"] button,
+:root.monokai [class*="absolute"] button,
+:root.dark [class*="absolute"] a,
+:root.dracula [class*="absolute"] a,
+:root.nord [class*="absolute"] a,
+:root.monokai [class*="absolute"] a {
+  color: var(--text-primary) !important;
+}
+
+:root.dark .absolute button:hover,
+:root.dracula .absolute button:hover,
+:root.nord .absolute button:hover,
+:root.monokai .absolute button:hover,
+:root.dark .absolute a:hover,
+:root.dracula .absolute a:hover,
+:root.nord .absolute a:hover,
+:root.monokai .absolute a:hover,
+:root.dark [class*="absolute"] button:hover,
+:root.dracula [class*="absolute"] button:hover,
+:root.nord [class*="absolute"] button:hover,
+:root.monokai [class*="absolute"] button:hover,
+:root.dark [class*="absolute"] a:hover,
+:root.dracula [class*="absolute"] a:hover,
+:root.nord [class*="absolute"] a:hover,
+:root.monokai [class*="absolute"] a:hover {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Dropdown menu items text - only for non-light themes */
+:root.dark .absolute button span,
+:root.dracula .absolute button span,
+:root.nord .absolute button span,
+:root.monokai .absolute button span,
+:root.dark .absolute button .text-sm,
+:root.dracula .absolute button .text-sm,
+:root.nord .absolute button .text-sm,
+:root.monokai .absolute button .text-sm,
+:root.dark .absolute button .font-medium,
+:root.dracula .absolute button .font-medium,
+:root.nord .absolute button .font-medium,
+:root.monokai .absolute button .font-medium,
+:root.dark [class*="absolute"] button span,
+:root.dracula [class*="absolute"] button span,
+:root.nord [class*="absolute"] button span,
+:root.monokai [class*="absolute"] button span,
+:root.dark [class*="absolute"] button .text-sm,
+:root.dracula [class*="absolute"] button .text-sm,
+:root.nord [class*="absolute"] button .text-sm,
+:root.monokai [class*="absolute"] button .text-sm,
+:root.dark [class*="absolute"] button .font-medium,
+:root.dracula [class*="absolute"] button .font-medium,
+:root.nord [class*="absolute"] button .font-medium,
+:root.monokai [class*="absolute"] button .font-medium {
+  color: var(--text-primary) !important;
+}
+
+/* Theme-aware utility classes */
+.bg-theme-primary {
+  background-color: var(--bg-primary);
+}
+
+.bg-theme-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.bg-theme-tertiary {
+  background-color: var(--bg-tertiary);
+}
+
+.text-theme-primary {
+  color: var(--text-primary);
+}
+
+.text-theme-secondary {
+  color: var(--text-secondary);
+}
+
+.text-theme-tertiary {
+  color: var(--text-tertiary);
+}
+
+.border-theme {
+  border-color: var(--border-color);
+}
+
+.bg-accent {
+  background-color: var(--accent-primary);
+}
+
+.text-accent {
+  color: var(--accent-primary);
+}
+
+.hover\:bg-accent-hover:hover {
+  background-color: var(--accent-hover);
 }

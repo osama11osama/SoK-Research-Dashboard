@@ -41,6 +41,24 @@ const userSchema = new mongoose.Schema({
   approvedByUserId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  },
+  notificationPreferences: {
+    publicNote: {
+      type: Boolean,
+      default: true
+    },
+    paperAdded: {
+      type: Boolean,
+      default: true
+    },
+    paperEdited: {
+      type: Boolean,
+      default: true
+    },
+    mention: {
+      type: Boolean,
+      default: true
+    }
   }
 }, {
   timestamps: false

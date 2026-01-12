@@ -79,10 +79,18 @@
   <!-- Main Content -->
   <main class="md:ml-64 p-8">
     <div class="max-w-4xl mx-auto">
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-slate-800 mb-2">Settings</h1>
-        <p class="text-slate-500">Manage application settings and preferences</p>
-      </div>
+      <header class="flex justify-between items-end mb-8">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-800 mb-2">Settings</h1>
+          <p class="text-slate-500">Manage application settings and preferences</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <!-- Theme Toggle -->
+          <app-theme-toggle></app-theme-toggle>
+          <!-- Notification Bell -->
+          <app-notification-bell></app-notification-bell>
+        </div>
+      </header>
 
       <!-- Settings List -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -134,6 +142,47 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
+            </div>
+          </div>
+
+          <!-- Theme Availability Settings -->
+          <div class="p-4 border border-slate-200 rounded-lg">
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold text-slate-800 mb-2">Available Themes</h3>
+              <p class="text-sm text-slate-500">Control which themes are visible and available to all users. Disabled themes will be hidden from the theme selector dropdown.</p>
+            </div>
+            <div class="space-y-3">
+              <div *ngFor="let theme of ['light', 'dark', 'dracula', 'nord', 'monokai']" class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg flex items-center justify-center" 
+                       [style.background-color]="theme === 'light' ? '#ffffff' : theme === 'dark' ? '#0f172a' : theme === 'dracula' ? '#282a36' : theme === 'nord' ? '#2e3440' : '#272822'"
+                       [style.border]="'2px solid ' + (theme === 'light' ? '#cbd5e1' : theme === 'dark' ? '#334155' : theme === 'dracula' ? '#44475a' : theme === 'nord' ? '#4c566a' : '#49483e')">
+                    <svg class="w-5 h-5" 
+                         [style.color]="theme === 'light' ? '#475569' : theme === 'dark' ? '#cbd5e1' : theme === 'dracula' ? '#f8f8f2' : theme === 'nord' ? '#eceff4' : '#f8f8f2'"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path *ngIf="theme === 'light'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                      <path *ngIf="theme === 'dark'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                      <path *ngIf="theme === 'dracula'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+                      <path *ngIf="theme === 'nord'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                      <path *ngIf="theme === 'monokai'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="font-medium text-slate-800 capitalize">{{ theme === 'light' ? 'Light' : theme === 'dark' ? 'Dark' : theme === 'dracula' ? 'Dracula' : theme === 'nord' ? 'Nord' : 'Monokai' }} Theme</p>
+                    <p class="text-xs text-slate-500">{{ theme === 'light' ? 'Default light mode' : theme === 'dark' ? 'Dark mode' : theme === 'dracula' ? 'Dracula color scheme' : theme === 'nord' ? 'Nord color palette' : 'Monokai editor theme' }}</p>
+                  </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="availableThemes[theme]"
+                    (change)="updateThemeAvailability(theme)"
+                    [disabled]="loading || settingsLoading"
+                    class="sr-only peer"
+                  />
+                  <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
             </div>
           </div>
         </div>

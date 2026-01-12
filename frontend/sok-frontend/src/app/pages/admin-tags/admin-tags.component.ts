@@ -6,11 +6,13 @@ import { ToastrService } from 'ngx-toastr';
 import { forkJoin } from 'rxjs';
 import { TagService, Tag } from '../../services/tag.service';
 import { AuthService } from '../../services/auth.service';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell.component';
+import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-admin-tags',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, NotificationBellComponent, ThemeToggleComponent],
   templateUrl: './admin-tags.component.html',
   styleUrl: './admin-tags.component.css'
 })

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { PaperService, Paper } from '../../services/paper.service';
 import { NoteService, Note } from '../../services/note.service';
@@ -10,11 +10,14 @@ import { TagService, Tag } from '../../services/tag.service';
 import { ThreatModelService, ThreatModel } from '../../services/threat-model.service';
 import { SettingsService } from '../../services/settings.service';
 import { FavoriteService } from '../../services/favorite.service';
+import { AdminService } from '../../services/admin.service';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell.component';
+import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-paper-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, NotificationBellComponent, ThemeToggleComponent],
   templateUrl: './paper-detail.component.html',
   styleUrl: './paper-detail.component.css'
 })
@@ -28,14 +31,23 @@ export class PaperDetailComponent implements OnInit {
   private threatModelService = inject(ThreatModelService);
   private settingsService = inject(SettingsService);
   private favoriteService = inject(FavoriteService);
+  private adminService = inject(AdminService);
 
   paper: Paper | null = null;
   notes: Note[] = [];
   newNoteContent = '';
   settings$ = this.settingsService.settings$;
+  currentUser$ = this.authService.currentUser$;
   newNoteVisibility: 'PRIVATE' | 'PUBLIC' = 'PUBLIC';
   loading = false;
   showNoteTemplates = false;
+  
+  // Mention autocomplete
+  showMentionSuggestions = false;
+  mentionSuggestions: any[] = [];
+  mentionQuery = '';
+  mentionStartIndex = -1;
+  allUsers: any[] = [];
   
   // Note templates
   noteTemplates = {
@@ -125,13 +137,24 @@ export class PaperDetailComponent implements OnInit {
   threatModels: ThreatModel[] = [];
 
   ngOnInit() {
+    this.loadTags();
+    this.loadThreatModels();
+    
+    // Load initial paper
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadPaper(id);
       this.loadNotes(id);
     }
-    this.loadTags();
-    this.loadThreatModels();
+    
+    // Subscribe to route params to reload when navigating to different paper
+    this.route.paramMap.subscribe(params => {
+      const paperId = params.get('id');
+      if (paperId) {
+        this.loadPaper(paperId);
+        this.loadNotes(paperId);
+      }
+    });
   }
 
   loadTags() {
@@ -184,6 +207,7 @@ export class PaperDetailComponent implements OnInit {
     }
 
     this.loading = true;
+    this.showMentionSuggestions = false;
     this.noteService.createNote(this.paper._id, this.newNoteContent, this.newNoteVisibility).subscribe({
       next: () => {
         this.newNoteContent = '';
@@ -201,6 +225,91 @@ export class PaperDetailComponent implements OnInit {
 
   canAddNotes(): boolean {
     return this.authService.canAddNotes();
+  }
+
+  canEditNote(note: Note): boolean {
+    if (!note || !note.authorUserId) return false;
+    if (this.isSuperAdmin()) return true;
+    let currentUserId: string | null = null;
+    this.authService.currentUser$.subscribe(user => {
+      if (user) currentUserId = user.id;
+    }).unsubscribe();
+    return currentUserId === note.authorUserId;
+  }
+
+  canDeleteNote(note: Note): boolean {
+    return this.canEditNote(note);
+  }
+
+  editingNoteId: string | null = null;
+  editingNoteContent = '';
+  editingNoteVisibility: 'PRIVATE' | 'PUBLIC' = 'PUBLIC';
+  showDeleteNoteConfirm = false;
+  deletingNoteId: string | null = null;
+
+  startEditNote(note: Note) {
+    if (!this.canEditNote(note)) return;
+    this.editingNoteId = note._id!;
+    this.editingNoteContent = note.content;
+    this.editingNoteVisibility = note.visibility;
+  }
+
+  cancelEditNote() {
+    this.editingNoteId = null;
+    this.editingNoteContent = '';
+    this.editingNoteVisibility = 'PUBLIC';
+  }
+
+  saveEditNote() {
+    if (!this.editingNoteId || !this.paper?._id || !this.editingNoteContent.trim()) {
+      return;
+    }
+
+    this.loading = true;
+    this.noteService.updateNote(this.paper._id, this.editingNoteId, this.editingNoteContent, this.editingNoteVisibility).subscribe({
+      next: () => {
+        this.loadNotes(this.paper!._id!);
+        this.cancelEditNote();
+        this.loading = false;
+        this.toastr.success('Note updated successfully');
+      },
+      error: (err) => {
+        console.error('Failed to update note:', err);
+        this.toastr.error(err.error?.message || 'Failed to update note');
+        this.loading = false;
+      }
+    });
+  }
+
+  confirmDeleteNote(noteId: string) {
+    this.deletingNoteId = noteId;
+    this.showDeleteNoteConfirm = true;
+  }
+
+  cancelDeleteNote() {
+    this.showDeleteNoteConfirm = false;
+    this.deletingNoteId = null;
+  }
+
+  deleteNote() {
+    if (!this.deletingNoteId || !this.paper?._id) {
+      return;
+    }
+
+    this.loading = true;
+    this.noteService.deleteNote(this.paper._id, this.deletingNoteId).subscribe({
+      next: () => {
+        this.loadNotes(this.paper!._id!);
+        this.cancelDeleteNote();
+        this.loading = false;
+        this.toastr.success('Note deleted successfully');
+      },
+      error: (err) => {
+        console.error('Failed to delete note:', err);
+        this.toastr.error(err.error?.message || 'Failed to delete note');
+        this.loading = false;
+      }
+    });
   }
 
   toggleFavorite() {
@@ -241,8 +350,131 @@ export class PaperDetailComponent implements OnInit {
     this.toastr.info('Template applied');
   }
 
+  onNoteInput(event: any) {
+    const text = event.target.value;
+    const cursorPos = event.target.selectionStart;
+    
+    // Find @ mentions
+    const textBeforeCursor = text.substring(0, cursorPos);
+    const mentionMatch = textBeforeCursor.match(/@(\w*)$/);
+    
+    if (mentionMatch) {
+      this.mentionStartIndex = cursorPos - mentionMatch[0].length;
+      this.mentionQuery = mentionMatch[1].toLowerCase();
+      this.filterMentionSuggestions();
+      this.showMentionSuggestions = true;
+    } else {
+      this.showMentionSuggestions = false;
+    }
+  }
+
+  onNoteKeydown(event: KeyboardEvent) {
+    if (this.showMentionSuggestions) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        this.showMentionSuggestions = false;
+      }
+    }
+  }
+
+  filterMentionSuggestions() {
+    if (!this.mentionQuery) {
+      this.mentionSuggestions = this.allUsers.slice(0, 5);
+    } else {
+      this.mentionSuggestions = this.allUsers
+        .filter(user => 
+          user.username.toLowerCase().includes(this.mentionQuery) ||
+          user.displayName.toLowerCase().includes(this.mentionQuery)
+        )
+        .slice(0, 5);
+    }
+  }
+
+  selectMention(user: any) {
+    const text = this.newNoteContent;
+    const beforeMention = text.substring(0, this.mentionStartIndex);
+    const afterMention = text.substring(this.mentionStartIndex + 1 + this.mentionQuery.length);
+    this.newNoteContent = beforeMention + '@' + user.username + ' ' + afterMention;
+    this.showMentionSuggestions = false;
+    this.mentionQuery = '';
+    this.mentionStartIndex = -1;
+    
+    // Focus back to textarea
+    setTimeout(() => {
+      const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
+      if (textarea) {
+        const newPos = beforeMention.length + user.username.length + 2;
+        textarea.focus();
+        textarea.setSelectionRange(newPos, newPos);
+      }
+    }, 0);
+  }
+
   isSuperAdmin(): boolean {
     return this.authService.isSuperAdmin();
+  }
+
+  logout() {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error('Logout error:', err);
+        this.toastr.error('Failed to logout');
+      }
+    });
+  }
+
+  getStatusColorClass(status: string): string {
+    switch (status) {
+      case 'TO_READ':
+        return 'bg-slate-100 text-slate-700 border border-slate-300';
+      case 'IN_PROGRESS':
+        return 'bg-amber-100 text-amber-700 border border-amber-300';
+      case 'READ':
+        return 'bg-green-100 text-green-700 border border-green-300';
+      default:
+        return 'bg-slate-100 text-slate-700 border border-slate-300';
+    }
+  }
+
+  pendingStatusChange: 'TO_READ' | 'IN_PROGRESS' | 'READ' | null = null;
+  showStatusConfirmModal = false;
+
+  changeReadingStatus(newStatus: 'TO_READ' | 'IN_PROGRESS' | 'READ') {
+    if (!this.paper || !this.paper._id) return;
+    if (this.paper.readingStatus === newStatus) return; // Already in this status
+    
+    this.pendingStatusChange = newStatus;
+    this.showStatusConfirmModal = true;
+  }
+
+  confirmStatusChange() {
+    if (!this.paper || !this.paper._id || !this.pendingStatusChange) return;
+
+    const newStatus = this.pendingStatusChange; // Store in a non-null variable
+    this.paperService.updateReadingStatus(this.paper._id, newStatus).subscribe({
+      next: () => {
+        if (this.paper) {
+          this.paper.readingStatus = newStatus;
+        }
+        this.toastr.success(`Reading status changed to ${newStatus === 'TO_READ' ? 'To Read' : newStatus === 'IN_PROGRESS' ? 'In Progress' : 'Read'}`);
+        this.showStatusConfirmModal = false;
+        this.pendingStatusChange = null;
+      },
+      error: (err) => {
+        console.error('Failed to update reading status:', err);
+        this.toastr.error(err.error?.message || 'Failed to update reading status');
+        this.showStatusConfirmModal = false;
+        this.pendingStatusChange = null;
+      }
+    });
+  }
+
+  cancelStatusChange() {
+    this.showStatusConfirmModal = false;
+    this.pendingStatusChange = null;
   }
 
   openEditModal() {

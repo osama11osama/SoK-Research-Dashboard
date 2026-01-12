@@ -56,6 +56,13 @@
         </svg>
         <span>Threat Models</span>
       </a>
+      <a routerLink="/app/admin/settings" routerLinkActive="bg-slate-800 text-blue-400" [routerLinkActiveOptions]="{exact: false}" class="w-full flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-400 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <span>Settings</span>
+      </a>
     </div>
 
     <div class="absolute bottom-10 left-6 right-6">
@@ -77,6 +84,10 @@
         <p class="text-slate-500">Systematization of Knowledge on Browser Security & Privacy</p>
       </div>
       <div class="flex items-center gap-3">
+        <!-- Theme Toggle -->
+        <app-theme-toggle></app-theme-toggle>
+        <!-- Notification Bell -->
+        <app-notification-bell></app-notification-bell>
         <!-- Export Dropdown -->
         <div class="relative" *ngIf="filteredPapers.length > 0">
           <button 
@@ -324,10 +335,30 @@
             />
           </div>
           <div class="flex-1">
-            <div class="flex items-center gap-3 mb-2">
-              <span [class]="'px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ' + getStatusColor(paper.readingStatus)">
-                {{ paper.readingStatus === 'TO_READ' ? 'To Read' : paper.readingStatus === 'IN_PROGRESS' ? 'In Progress' : 'Read' }}
-              </span>
+            <div class="flex items-center gap-2 mb-2">
+              <div class="flex gap-1 bg-slate-100 p-1 rounded-lg">
+                <button
+                  (click)="changeReadingStatus(paper._id!, 'TO_READ')"
+                  [class]="'px-3 py-1 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ' + (paper.readingStatus === 'TO_READ' ? 'bg-white text-slate-700 shadow-sm' : 'text-slate-500 hover:text-slate-700')"
+                  title="Set status to To Read"
+                >
+                  To Read
+                </button>
+                <button
+                  (click)="changeReadingStatus(paper._id!, 'IN_PROGRESS')"
+                  [class]="'px-3 py-1 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ' + (paper.readingStatus === 'IN_PROGRESS' ? 'bg-white text-amber-700 shadow-sm' : 'text-slate-500 hover:text-slate-700')"
+                  title="Set status to In Progress"
+                >
+                  In Progress
+                </button>
+                <button
+                  (click)="changeReadingStatus(paper._id!, 'READ')"
+                  [class]="'px-3 py-1 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ' + (paper.readingStatus === 'READ' ? 'bg-white text-green-700 shadow-sm' : 'text-slate-500 hover:text-slate-700')"
+                  title="Set status to Read"
+                >
+                  Read
+                </button>
+              </div>
               <span class="text-slate-400 text-sm font-medium">{{ paper.venue }}</span>
               <span *ngIf="(settings$ | async)?.['showPaperTimestamps'] && paper.createdAt" class="text-slate-400 text-xs">
                 Added {{ paper.createdAt | date:'short' }}
@@ -576,6 +607,33 @@
           class="flex-1 px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg shadow-md shadow-blue-200 transition-colors"
         >
           Save Paper
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reading Status Change Confirmation Modal -->
+  <div *ngIf="showStatusConfirmModal && pendingStatusChange" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+      <div class="p-6 border-b border-slate-100">
+        <h3 class="text-xl font-bold text-slate-800">Confirm Status Change</h3>
+        <p class="text-sm text-slate-600 mt-2">
+          Are you sure you want to change the reading status to 
+          <strong>{{ pendingStatusChange.newStatus === 'TO_READ' ? 'To Read' : pendingStatusChange.newStatus === 'IN_PROGRESS' ? 'In Progress' : 'Read' }}</strong>?
+        </p>
+      </div>
+      <div class="p-6 bg-slate-50 flex gap-3">
+        <button
+          (click)="cancelStatusChange()"
+          class="flex-1 px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="confirmStatusChange()"
+          class="flex-1 px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg transition-colors"
+        >
+          Confirm
         </button>
       </div>
     </div>

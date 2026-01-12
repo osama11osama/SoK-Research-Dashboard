@@ -35,6 +35,8 @@ export class SettingsService {
     this.http.get<SettingsResponse>(this.apiUrl).subscribe({
       next: (response) => {
         this.settingsSubject.next(response.settings);
+        // Trigger theme service to reload available themes
+        window.dispatchEvent(new CustomEvent('themes-updated'));
       },
       error: (err) => {
         console.error('Failed to load settings:', err);

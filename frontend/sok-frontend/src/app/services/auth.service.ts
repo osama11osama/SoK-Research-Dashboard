@@ -48,6 +48,15 @@ export class AuthService {
     );
   }
 
+  refreshToken(): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/refresh`, {}).pipe(
+      tap(response => {
+        localStorage.setItem('accessToken', response.accessToken);
+        this.currentUserSubject.next(response.user);
+      })
+    );
+  }
+
   logout(): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/logout`, {}).pipe(
       tap(() => {
@@ -107,10 +116,15 @@ export class AuthService {
     return user?.role === 'SUPER_ADMIN' || user?.role === 'REVIEWER_NOTE';
   }
 
-  updateProfile(username?: string, password?: string): Observable<{ message: string; user: User }> {
+  updateProfile(username?: string, password?: string, currentPassword?: string): Observable<{ message: string; user: User }> {
     const body: any = {};
     if (username) body.username = username;
-    if (password) body.password = password;
+    if (password) {
+      body.password = password;
+      if (currentPassword) {
+        body.currentPassword = currentPassword;
+      }
+    }
     
     return this.http.patch<{ message: string; user: User }>(`${this.apiUrl}/auth/profile`, body).pipe(
       tap(response => {

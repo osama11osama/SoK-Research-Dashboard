@@ -13,6 +13,7 @@ const statsRoutes = require('./routes/stats');
 const tagsRoutes = require('./routes/tags');
 const threatModelsRoutes = require('./routes/threat-models');
 const favoritesRoutes = require('./routes/favorites');
+const notificationsRoutes = require('./routes/notifications');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,6 +43,7 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/tags', tagsRoutes);
 app.use('/api/threat-models', threatModelsRoutes);
 app.use('/api/favorites', favoritesRoutes);
+app.use('/api/notifications', notificationsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

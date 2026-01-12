@@ -5,11 +5,13 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell.component';
+import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-admin-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, NotificationBellComponent, ThemeToggleComponent],
   templateUrl: './admin-settings.component.html',
   styleUrl: './admin-settings.component.css'
 })
@@ -25,6 +27,15 @@ export class AdminSettingsComponent implements OnInit {
   showPaperCreator = false;
   loading = false;
   settingsLoading = false;
+  
+  // Theme availability settings
+  availableThemes: { [key: string]: boolean } = {
+    light: true,
+    dark: true,
+    dracula: true,
+    nord: true,
+    monokai: true
+  };
 
   ngOnInit() {
     this.loadSettings();
@@ -36,6 +47,19 @@ export class AdminSettingsComponent implements OnInit {
       next: (response) => {
         this.showPaperTimestamps = response.settings['showPaperTimestamps'] === true;
         this.showPaperCreator = response.settings['showPaperCreator'] === true;
+        
+        // Load theme availability settings
+        const themeSettings = response.settings['availableThemes'];
+        if (themeSettings && typeof themeSettings === 'object') {
+          this.availableThemes = {
+            light: themeSettings.light !== false,
+            dark: themeSettings.dark !== false,
+            dracula: themeSettings.dracula !== false,
+            nord: themeSettings.nord !== false,
+            monokai: themeSettings.monokai !== false
+          };
+        }
+        
         this.settingsLoading = false;
       },
       error: (err) => {
@@ -71,6 +95,29 @@ export class AdminSettingsComponent implements OnInit {
       error: (err) => {
         console.error('Failed to update settings:', err);
         this.toastr.error('Failed to update settings');
+        this.loading = false;
+      }
+    });
+  }
+
+  updateThemeAvailability(theme: string) {
+    this.loading = true;
+    const currentThemes = this.settingsService.getSettingValue('availableThemes') || {};
+    const updatedThemes = {
+      ...currentThemes,
+      [theme]: this.availableThemes[theme as keyof typeof this.availableThemes]
+    };
+    
+    this.settingsService.updateSetting('availableThemes', updatedThemes, 'Control which themes are available to users').subscribe({
+      next: () => {
+        this.toastr.success('Theme settings updated successfully');
+        this.loading = false;
+        // Notify theme service to refresh available themes
+        window.dispatchEvent(new CustomEvent('themes-updated'));
+      },
+      error: (err) => {
+        console.error('Failed to update theme settings:', err);
+        this.toastr.error('Failed to update theme settings');
         this.loading = false;
       }
     });

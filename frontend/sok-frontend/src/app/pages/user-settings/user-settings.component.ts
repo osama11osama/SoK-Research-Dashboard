@@ -6,11 +6,14 @@ import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { SettingsService } from '../../services/settings.service';
+import { NotificationService, NotificationPreferences } from '../../services/notification.service';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell.component';
+import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-user-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, NotificationBellComponent, ThemeToggleComponent],
   templateUrl: './user-settings.component.html',
   styleUrl: './user-settings.component.css'
 })
@@ -18,12 +21,14 @@ export class UserSettingsComponent implements OnInit {
   private authService = inject(AuthService);
   private adminService = inject(AdminService);
   private settingsService = inject(SettingsService);
+  private notificationService = inject(NotificationService);
   private toastr = inject(ToastrService);
   private router = inject(Router);
 
   currentUser$ = this.authService.currentUser$;
   
   username = '';
+  currentPassword = '';
   newPassword = '';
   confirmPassword = '';
   loading = false;
@@ -39,12 +44,22 @@ export class UserSettingsComponent implements OnInit {
   showPaperCreator = false;
   settingsLoading = false;
 
+  // Notification preferences
+  notificationPreferences: NotificationPreferences = {
+    publicNote: true,
+    paperAdded: true,
+    paperEdited: true,
+    mention: true
+  };
+  notificationLoading = false;
+
   ngOnInit() {
     this.loadCurrentUser();
     if (this.isSuperAdmin()) {
       this.loadAllUsers();
       this.loadSettings();
     }
+    this.loadNotificationPreferences();
   }
 
   loadCurrentUser() {
@@ -97,6 +112,11 @@ export class UserSettingsComponent implements OnInit {
   }
 
   updatePassword() {
+    if (!this.currentPassword) {
+      this.toastr.error('Current password is required');
+      return;
+    }
+
     if (!this.newPassword || this.newPassword.length < 8) {
       this.toastr.error('Password must be at least 8 characters');
       return;
@@ -108,9 +128,10 @@ export class UserSettingsComponent implements OnInit {
     }
 
     this.loading = true;
-    this.authService.updateProfile(undefined, this.newPassword).subscribe({
+    this.authService.updateProfile(undefined, this.newPassword, this.currentPassword).subscribe({
       next: () => {
         this.toastr.success('Password updated successfully');
+        this.currentPassword = '';
         this.newPassword = '';
         this.confirmPassword = '';
         this.loading = false;
@@ -229,6 +250,32 @@ export class UserSettingsComponent implements OnInit {
         console.error('Failed to update settings:', err);
         this.toastr.error('Failed to update settings');
         this.loading = false;
+      }
+    });
+  }
+
+  loadNotificationPreferences() {
+    this.notificationService.getPreferences().subscribe({
+      next: (response) => {
+        this.notificationPreferences = response.preferences;
+      },
+      error: (err) => {
+        console.error('Failed to load notification preferences:', err);
+      }
+    });
+  }
+
+  updateNotificationPreferences() {
+    this.notificationLoading = true;
+    this.notificationService.updatePreferences(this.notificationPreferences).subscribe({
+      next: () => {
+        this.toastr.success('Notification preferences updated');
+        this.notificationLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to update notification preferences:', err);
+        this.toastr.error(err.error?.message || 'Failed to update notification preferences');
+        this.notificationLoading = false;
       }
     });
   }

@@ -193,7 +193,11 @@ router.patch('/profile', authenticate, [
   body('password')
     .optional({ checkFalsy: true })
     .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters')
+    .withMessage('Password must be at least 8 characters'),
+  body('currentPassword')
+    .optional({ checkFalsy: true })
+    .notEmpty()
+    .withMessage('Current password is required when changing password')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -201,7 +205,7 @@ router.patch('/profile', authenticate, [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { username, password } = req.body;
+    const { username, password, currentPassword } = req.body;
     const user = await User.findById(req.user._id);
     
     if (!user) {
@@ -211,6 +215,18 @@ router.patch('/profile', authenticate, [
     // Check if at least one field is being updated
     if (!username && !password) {
       return res.status(400).json({ message: 'At least one field (username or password) must be provided' });
+    }
+
+    // If password is being changed, verify current password
+    if (password) {
+      if (!currentPassword) {
+        return res.status(400).json({ message: 'Current password is required to change password' });
+      }
+      
+      const isCurrentPasswordValid = await user.comparePassword(currentPassword);
+      if (!isCurrentPasswordValid) {
+        return res.status(401).json({ message: 'Current password is incorrect' });
+      }
     }
 
     // Update username if provided

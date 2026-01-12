@@ -1,0 +1,125 @@
+<div class="relative">
+  <!-- Bell Icon -->
+  <button
+    (click)="toggleDropdown()"
+    class="notification-bell-button relative p-2.5 rounded-lg transition-all border border-slate-300 bg-white shadow-sm hover:shadow-md"
+    type="button"
+    style="background-color: var(--button-bg, #ffffff); border-color: var(--button-border, #cbd5e1); color: var(--button-icon-color, #475569);"
+    [style.background-color]="'var(--button-bg, #ffffff)'"
+    [style.border-color]="'var(--button-border, #cbd5e1)'"
+    [style.color]="'var(--button-icon-color, #475569)'"
+  >
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+    </svg>
+    <!-- Unread Badge -->
+    <span
+      *ngIf="unreadCount > 0"
+      class="absolute top-0 right-0 block h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
+    >
+      {{ unreadCount > 9 ? '9+' : unreadCount }}
+    </span>
+  </button>
+
+  <!-- Dropdown -->
+  <div
+    *ngIf="showDropdown"
+    class="absolute right-0 mt-2 w-96 rounded-lg shadow-xl z-50 max-h-96 overflow-hidden flex flex-col"
+    [style.background-color]="'var(--bg-secondary)'"
+    [style.border-color]="'var(--border-color)'"
+    style="border: 1px solid;"
+    (click)="$event.stopPropagation()"
+    #dropdown
+  >
+    <!-- Header -->
+    <div class="p-4 flex items-center justify-between" [style.border-bottom-color]="'var(--border-color)'" style="border-bottom: 1px solid;">
+      <h3 class="text-lg font-semibold" [style.color]="'var(--text-primary)'">Notifications</h3>
+      <div class="flex gap-2">
+        <button
+          *ngIf="unreadCount > 0"
+          (click)="markAllAsRead()"
+          class="text-sm text-blue-600 hover:text-blue-700"
+        >
+          Mark all as read
+        </button>
+        <button
+          (click)="showDropdown = false"
+          class="text-slate-400 hover:text-slate-600"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Notifications List -->
+    <div class="overflow-y-auto flex-1">
+      <div *ngIf="loading" class="p-4 text-center text-slate-500">
+        Loading...
+      </div>
+      <div *ngIf="!loading && notifications.length === 0" class="p-8 text-center text-slate-500">
+        <svg class="w-12 h-12 mx-auto mb-2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+        </svg>
+        <p>No notifications</p>
+      </div>
+      <div *ngIf="!loading && notifications.length > 0" [style.border-top-color]="'var(--border-color)'" style="border-top: 1px solid;">
+        <div
+          *ngFor="let notification of notifications"
+          (click)="handleNotificationClick(notification)"
+          [style.background-color]="!notification.read ? 'var(--accent-primary)' : 'transparent'"
+          [style.opacity]="!notification.read ? '0.1' : '1'"
+          [style.border-bottom-color]="'var(--border-color)'"
+          style="border-bottom: 1px solid;"
+          class="p-4 cursor-pointer transition-colors relative"
+          (mouseenter)="onNotificationMouseEnter($event, notification)"
+          (mouseleave)="onNotificationMouseLeave($event, notification)"
+        >
+          <div class="flex items-start gap-3">
+            <!-- Icon -->
+            <div class="flex-shrink-0 mt-1">
+              <div [class.bg-blue-100]="notification.type === 'PUBLIC_NOTE'"
+                   [class.bg-green-100]="notification.type === 'PAPER_ADDED'"
+                   [class.bg-yellow-100]="notification.type === 'PAPER_EDITED'"
+                   [class.bg-purple-100]="notification.type === 'MENTION'"
+                   class="w-8 h-8 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5"
+                     [class.text-blue-600]="notification.type === 'PUBLIC_NOTE'"
+                     [class.text-green-600]="notification.type === 'PAPER_ADDED'"
+                     [class.text-yellow-600]="notification.type === 'PAPER_EDITED'"
+                     [class.text-purple-600]="notification.type === 'MENTION'"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getNotificationIcon(notification.type)"></path>
+                </svg>
+              </div>
+            </div>
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex-1">
+                  <p class="text-sm font-semibold" [style.color]="'var(--text-primary)'">{{ notification.title }}</p>
+                  <p class="text-sm mt-1" [style.color]="'var(--text-secondary)'">{{ notification.message }}</p>
+                  <p class="text-xs mt-1" [style.color]="'var(--text-tertiary)'">{{ formatTime(notification.createdAt) }}</p>
+                </div>
+                <!-- Unread indicator -->
+                <div *ngIf="!notification.read" class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+              </div>
+            </div>
+            <!-- Delete button -->
+            <button
+              (click)="deleteNotification(notification, $event)"
+              class="flex-shrink-0 text-slate-400 hover:text-red-500 transition-colors"
+              type="button"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

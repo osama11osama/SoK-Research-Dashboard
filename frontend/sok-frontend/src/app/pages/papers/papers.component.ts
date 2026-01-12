@@ -11,11 +11,13 @@ import { TagService, Tag } from '../../services/tag.service';
 import { ThreatModelService, ThreatModel } from '../../services/threat-model.service';
 import { SettingsService } from '../../services/settings.service';
 import { FavoriteService } from '../../services/favorite.service';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell.component';
+import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-papers',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, NotificationBellComponent, ThemeToggleComponent],
   templateUrl: './papers.component.html',
   styleUrl: './papers.component.css'
 })
@@ -427,6 +429,39 @@ export class PapersComponent implements OnInit {
         }
       }
     });
+  }
+
+  pendingStatusChange: { paperId: string; newStatus: 'TO_READ' | 'IN_PROGRESS' | 'READ' } | null = null;
+  showStatusConfirmModal = false;
+
+  changeReadingStatus(paperId: string, newStatus: 'TO_READ' | 'IN_PROGRESS' | 'READ') {
+    this.pendingStatusChange = { paperId, newStatus };
+    this.showStatusConfirmModal = true;
+  }
+
+  confirmStatusChange() {
+    if (!this.pendingStatusChange) return;
+
+    const { paperId, newStatus } = this.pendingStatusChange;
+    this.paperService.updateReadingStatus(paperId, newStatus).subscribe({
+      next: () => {
+        this.loadPapers();
+        this.toastr.success(`Reading status changed to ${newStatus === 'TO_READ' ? 'To Read' : newStatus === 'IN_PROGRESS' ? 'In Progress' : 'Read'}`);
+        this.showStatusConfirmModal = false;
+        this.pendingStatusChange = null;
+      },
+      error: (err) => {
+        console.error('Failed to update reading status:', err);
+        this.toastr.error(err.error?.message || 'Failed to update reading status');
+        this.showStatusConfirmModal = false;
+        this.pendingStatusChange = null;
+      }
+    });
+  }
+
+  cancelStatusChange() {
+    this.showStatusConfirmModal = false;
+    this.pendingStatusChange = null;
   }
 
   deletePaper(id: string) {

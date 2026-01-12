@@ -6,6 +6,7 @@ const Settings = require('../models/Settings');
 const Paper = require('../models/Paper');
 const { authenticate } = require('../middleware/auth');
 const { requireSuperAdmin, logAudit } = require('../middleware/rbac');
+const { notifyPaperAdded } = require('../utils/notifications');
 
 const router = express.Router();
 
@@ -444,6 +445,9 @@ router.post('/tools/add-paper', authenticate, [
       sources: req.body.sources || [],
       timestamp: new Date().toISOString()
     });
+
+    // Send notifications
+    await notifyPaperAdded(paper._id, req.user._id);
 
     res.status(201).json({ paper });
   } catch (err) {
